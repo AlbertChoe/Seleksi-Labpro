@@ -4,11 +4,59 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+model User {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  username    String   @unique
+  fullName    String
+  password    String
+  balance     Int      @default(0)
+  purchases   Purchase[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Film {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  director    String
+  releaseYear Int
+  genre       String[]
+  price       Int
+  duration    Int
+  videoUrl    String
+  coverImageUrl String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Purchase Purchase[]
+}
+
+model Purchase {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  filmId      Int
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  film        Film     @relation(fields: [filmId], references: [id])
+
+  @@unique([userId, filmId])  
+}
+
+model Admin {
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  password    String
+  createdAt   DateTime @default(now())
 }

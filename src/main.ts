@@ -4,6 +4,11 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
+const port = process.env.PORT || 3000;
+console.log(
+  `Launching NestJS app on port ${port}, URL: http://127.0.0.1:${port}`,
+);
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -20,6 +25,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/panel', app, document);
 
-  await app.listen(3000);
+  await app.listen(port);
 }
 bootstrap();
