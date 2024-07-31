@@ -19,7 +19,6 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const result = await this.cloudflareR2Service.uploadFile(
-      'seleksi-labpro',
       file.originalname,
       file.buffer,
       file.mimetype,
@@ -29,7 +28,7 @@ export class UploadController {
 
   @Get(':key')
   async getFile(@Param('key') key: string, @Res() res: Response) {
-    const file = await this.cloudflareR2Service.getFile('seleksi-labpro', key);
+    const file = await this.cloudflareR2Service.getFile(key);
     res.setHeader('Content-Type', file.ContentType);
     res.send(file.Body);
   }
