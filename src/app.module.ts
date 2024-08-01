@@ -6,8 +6,8 @@ import { CloudflareR2Service } from './cloudflare-r2/cloudflare-r2.service';
 import { UploadController } from './cloudflare-r2/upload.controller';
 import { WinstonModule } from 'nest-winston';
 import { winstonLogger } from './logger/winston-logger';
-import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,8 +16,9 @@ import { PrismaModule } from './prisma/prisma.module';
       instance: winstonLogger,
     }),
     PrismaModule,
+    AuthModule,
   ],
   controllers: [AppController, UploadController],
-  providers: [AppService, CloudflareR2Service, PrismaService],
+  providers: [AppService, CloudflareR2Service],
 })
 export class AppModule {}
