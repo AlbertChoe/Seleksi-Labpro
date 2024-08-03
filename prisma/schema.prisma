@@ -8,7 +8,7 @@ generator client {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(cuid())
   email       String    @unique
   username    String    @unique
   firstName   String
@@ -22,7 +22,7 @@ model User {
 }
 
 model Film {
-  id            Int       @id @default(autoincrement())
+  id            String    @id @default(cuid())
   title         String
   description   String
   director      String
@@ -30,7 +30,7 @@ model Film {
   genre         String[]
   price         Int
   duration      Int
-  videoUrl      String
+  videoUrl      String? 
   coverImageUrl String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -39,12 +39,12 @@ model Film {
 }
 
 model Purchase {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  filmId    Int
+  id        String   @id @default(cuid())
+  userId    String
+  filmId    String
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
+ user      User     @relation(fields: [userId], references: [id])
   film      Film     @relation(fields: [filmId], references: [id])
 
   @@unique([userId, filmId])
