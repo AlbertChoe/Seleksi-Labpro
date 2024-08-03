@@ -31,6 +31,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/panel', app, document);
 
+  app.enableCors({
+    origin: ['http://localhost:3000', 'https://labpro-fe.hmif.dev'], // Add your frontend domains
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   await app.listen(port);
 }
 bootstrap();
