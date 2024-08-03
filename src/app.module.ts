@@ -8,6 +8,8 @@ import { WinstonModule } from 'nest-winston';
 import { winstonLogger } from './logger/winston-logger';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { FilmsService } from './films/films.service';
+import { FilmsController } from './films/films.controller';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule,
     AuthModule,
   ],
-  controllers: [AppController, UploadController],
-  providers: [AppService, CloudflareR2Service],
+  controllers: [AppController, UploadController, FilmsController],
+  providers: [AppService, CloudflareR2Service, FilmsService],
 })
 export class AppModule {}

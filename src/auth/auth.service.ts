@@ -23,6 +23,7 @@ export class AuthService {
         firstName: createUserDto.firstName,
         lastName: createUserDto.lastName,
         password: hashedPassword,
+        role: createUserDto.role,
       },
     });
   }
@@ -51,6 +52,7 @@ export class AuthService {
       const token = this.jwtService.sign({
         userId: user.id,
         username: user.username,
+        role: user.role,
       });
       this.logger.log('JWT token generated successfully');
       return token;

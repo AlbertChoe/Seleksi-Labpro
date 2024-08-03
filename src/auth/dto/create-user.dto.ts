@@ -15,4 +15,7 @@ export class CreateUserDto {
 
   @MinLength(8)
   password: string;
+
+  @IsNotEmpty()
+  role: string; // Add role field to DTO
 }
