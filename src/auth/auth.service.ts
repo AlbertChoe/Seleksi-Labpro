@@ -29,12 +29,12 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<string> {
-    this.logger.log('Attempting to login user:', loginDto.username);
+    this.logger.log(`Attempting to login user: ${loginDto.username}`);
     const user = await this.prisma.user.findUnique({
       where: { username: loginDto.username },
     });
     if (!user) {
-      this.logger.error('User not found:', loginDto.username);
+      this.logger.error(`User not found: ${loginDto.username}`);
       throw new Error('Invalid credentials');
     }
 
@@ -43,11 +43,11 @@ export class AuthService {
       user.password,
     );
     if (!passwordMatch) {
-      this.logger.error('Password mismatch for user:', loginDto.username);
+      this.logger.error(`Password mismatch for user: ${loginDto.username}`);
       throw new Error('Invalid credentials');
     }
 
-    this.logger.log('User authenticated successfully:', user.username);
+    this.logger.log(`User authenticated successfully: ${user.username}`);
     try {
       const token = this.jwtService.sign({
         userId: user.id,

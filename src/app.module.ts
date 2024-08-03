@@ -10,6 +10,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { FilmsService } from './films/films.service';
 import { FilmsController } from './films/films.controller';
+import { UserService } from './user/user.service';
+import { UserController } from './user/user.controller';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { FilmsController } from './films/films.controller';
     PrismaModule,
     AuthModule,
   ],
-  controllers: [AppController, UploadController, FilmsController],
-  providers: [AppService, CloudflareR2Service, FilmsService],
+  controllers: [AppController, UploadController, FilmsController, UserController],
+  providers: [AppService, CloudflareR2Service, FilmsService, UserService],
 })
 export class AppModule {}
