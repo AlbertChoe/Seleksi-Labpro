@@ -34,21 +34,21 @@ export class FilmsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: string) {
     return this.filmsService.findOne(id);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  update(@Param('id') id: number, @Body() updateFilmDto: UpdateFilmDto) {
+  update(@Param('id') id: string, @Body() updateFilmDto: UpdateFilmDto) {
     return this.filmsService.update(id, updateFilmDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  remove(@Param('id') id: number) {
+  remove(@Param('id') id: string) {
     return this.filmsService.remove(id);
   }
 }

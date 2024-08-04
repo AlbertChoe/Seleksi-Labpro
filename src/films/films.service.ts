@@ -15,18 +15,18 @@ export class FilmsService {
     return this.prisma.film.findMany();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.prisma.film.findUnique({ where: { id } });
   }
 
-  async update(id: number, updateFilmDto: UpdateFilmDto) {
+  async update(id: string, updateFilmDto: UpdateFilmDto) {
     return this.prisma.film.update({
       where: { id },
       data: updateFilmDto,
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return this.prisma.film.delete({ where: { id } });
   }
 }

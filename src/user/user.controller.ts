@@ -30,7 +30,9 @@ export class UserController {
     return {
       status: 'success',
       message: 'Users fetched successfully',
-      data: users,
+      data: users.map((user) => ({
+        ...user,
+      })),
     };
   }
 
@@ -41,7 +43,9 @@ export class UserController {
     return {
       status: 'success',
       message: 'User fetched successfully',
-      data: user,
+      data: {
+        ...user,
+      },
     };
   }
 
@@ -58,7 +62,9 @@ export class UserController {
     return {
       status: 'success',
       message: 'User balance updated successfully',
-      data: user,
+      data: {
+        ...user,
+      },
     };
   }
 
@@ -69,7 +75,9 @@ export class UserController {
     return {
       status: 'success',
       message: 'User deleted successfully',
-      data: user,
+      data: {
+        ...user,
+      },
     };
   }
 }

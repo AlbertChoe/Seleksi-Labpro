@@ -23,7 +23,6 @@ export class AuthService {
         firstName: createUserDto.firstName,
         lastName: createUserDto.lastName,
         password: hashedPassword,
-        role: createUserDto.role,
       },
     });
   }
