@@ -7,8 +7,16 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
+  UploadedFiles,
+  UseInterceptors,
+  Logger,
+  UploadedFile,
 } from '@nestjs/common';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
 import { FilmsService } from './films.service';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
@@ -19,36 +27,105 @@ import { Role } from '../auth/role.enum';
 
 @Controller('films')
 export class FilmsController {
+  private readonly logger = new Logger(FilmsController.name);
+
   constructor(private readonly filmsService: FilmsService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  create(@Body() createFilmDto: CreateFilmDto) {
-    return this.filmsService.create(createFilmDto);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'video', maxCount: 1 },
+      { name: 'cover_image', maxCount: 1 },
+    ]),
+  )
+  async create(
+    @Body() createFilmDto: CreateFilmDto,
+    @UploadedFiles()
+    files: {
+      video?: Express.Multer.File[];
+      cover_image?: Express.Multer.File[];
+    },
+  ) {
+    const video = files.video ? files.video[0] : null;
+    const coverImage = files.cover_image ? files.cover_image[0] : null;
+    this.logger.log('Entered create method');
+    this.logger.log(`Video file received: ${video}`);
+    this.logger.log(`Image file received: ${coverImage}`);
+    // this.logger.log(`Video file received: ${video ? video.filename : 'none'}`);
+    // this.logger.log(
+    //   `Cover image file received: ${coverImage ? coverImage.filename : 'none'}`,
+    // );
+
+    const film = await this.filmsService.create(
+      createFilmDto,
+      video,
+      coverImage,
+    );
+    return {
+      status: 'success',
+      message: 'Film created successfully',
+      data: film,
+    };
   }
 
   @Get()
   findAll() {
+    this.logger.log('Fetching all films');
     return this.filmsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.filmsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    this.logger.log(`Fetching film with id ${id}`);
+    const film = await this.filmsService.findOne(id);
+    return {
+      status: 'success',
+      message: 'Film fetched successfully',
+      data: film,
+    };
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  update(@Param('id') id: string, @Body() updateFilmDto: UpdateFilmDto) {
-    return this.filmsService.update(id, updateFilmDto);
+  @UseInterceptors(FilesInterceptor('files'))
+  async update(
+    @Param('id') id: string,
+    @Body() updateFilmDto: UpdateFilmDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    this.logger.log(`Updating film with id ${id}`);
+    const video = files
+      ? files.find((file) => file.fieldname === 'video')
+      : null;
+    const coverImage = files
+      ? files.find((file) => file.fieldname === 'coverImage')
+      : null;
+    const film = await this.filmsService.update(
+      id,
+      updateFilmDto,
+      video,
+      coverImage,
+    );
+    return {
+      status: 'success',
+      message: 'Film updated successfully',
+      data: film,
+    };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  remove(@Param('id') id: string) {
-    return this.filmsService.remove(id);
+  async remove(@Param('id') id: string) {
+    this.logger.log(`Deleting film with id ${id}`);
+    await this.filmsService.remove(id);
+    return {
+      status: 'success',
+      message: 'Film deleted successfully',
+      data: null,
+    };
   }
 }

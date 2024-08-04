@@ -38,5 +38,12 @@ export class CloudflareR2Service {
     return this.s3.getObject(params).promise();
   }
 
-  // Add more methods as needed
+  async deleteFile(url: string) {
+    const key = url.split('/').pop();
+    const params = {
+      Bucket: this.bucketName,
+      Key: key,
+    };
+    return this.s3.deleteObject(params).promise();
+  }
 }
