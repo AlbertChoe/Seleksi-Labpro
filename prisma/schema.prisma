@@ -26,7 +26,7 @@ model Film {
   title         String
   description   String
   director      String
-  releaseYear   Int
+  release_year   Int
   genre         String[]
   price         Int
   duration      Int
