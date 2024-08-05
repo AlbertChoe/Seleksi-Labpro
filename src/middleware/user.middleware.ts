@@ -1,22 +1,51 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { PrismaService } from '../prisma/prisma.service';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UserMiddleware implements NestMiddleware {
+  private readonly logger = new Logger(UserMiddleware.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    if (req.user) {
-      const user = await this.prisma.user.findUnique({
-        where: { id: req.user.id },
-      });
+    this.logger.log('User Middleware - Entering Middleware');
 
-      if (user) {
-        req.user.balance = user.balance;
-      } else {
-        req.user.balance = 0;
+    const token =
+      req.cookies?.token || req.headers.authorization?.split(' ')[1];
+    this.logger.log(`User Middleware - Cookies: ${JSON.stringify(token)}`);
+
+    if (token) {
+      try {
+        const decodedToken = jwt.verify(
+          token,
+          process.env.JWT_SECRET || 'secretKey',
+        ) as JwtPayload;
+        const user = await this.prisma.user.findUnique({
+          where: { id: decodedToken.userId },
+        });
+
+        if (user) {
+          req.user = {
+            id: user.id,
+            username: user.username,
+            balance: user.balance,
+            role: user.role,
+          };
+          this.logger.log(
+            `User Middleware - User: ${JSON.stringify(req.user)}`,
+          );
+        } else {
+          this.logger.warn('User Middleware - User not found');
+        }
+      } catch (error) {
+        this.logger.error('User Middleware - Error verifying token:', error);
       }
+    } else {
+      this.logger.warn(
+        'User Middleware - No token found in cookies or headers',
+      );
     }
     next();
   }

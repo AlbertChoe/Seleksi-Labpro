@@ -8,7 +8,7 @@ import { winstonLogger } from './logger/winston-logger';
 import * as exphbs from 'express-handlebars'; // Adjusted import
 import * as handlebarsLayouts from 'handlebars-layouts';
 import * as Handlebars from 'handlebars';
-
+import * as cookieParser from 'cookie-parser';
 const port = process.env.PORT || 3000;
 console.log(
   `Launching NestJS app on port ${port}, URL: http://127.0.0.1:${port}`,
@@ -27,6 +27,8 @@ async function bootstrap() {
   // Register Handlebars Layouts helpers
   Handlebars.registerHelper(handlebarsLayouts(Handlebars));
 
+  app.use(cookieParser());
+
   // Set up Handlebars as the view engine
   app.engine(
     'hbs',
@@ -37,15 +39,6 @@ async function bootstrap() {
     }),
   );
   app.setViewEngine('hbs');
-
-  const config = new DocumentBuilder()
-    .setTitle('Seleksi Labpro API')
-    .setDescription('The API description')
-    .setVersion('1.0')
-    .addTag('api')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/panel', app, document);
 
   app.enableCors({
     origin: ['http://localhost:3000', 'https://labpro-fe.hmif.dev'], // Add your frontend domains

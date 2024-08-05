@@ -59,6 +59,10 @@ export class AuthController {
       res.cookie('token', token, { httpOnly: true });
 
       const acceptHeader = req.headers['accept'];
+      const user = await this.authService.validateUser(
+        loginDto.username,
+        loginDto.password,
+      );
 
       // Check if the request accepts HTML or JSON
       if (acceptHeader && acceptHeader.includes('application/json')) {
@@ -72,7 +76,12 @@ export class AuthController {
           },
         });
       } else {
-        // Redirect for your own frontend
+        req.user = {
+          username: user.username,
+          id: user.id,
+          balance: user.balance,
+          role: user.role,
+        };
         res.redirect('/');
       }
     } catch (error) {

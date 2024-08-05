@@ -60,4 +60,13 @@ export class AuthService {
       throw new Error('Error generating JWT token');
     }
   }
+
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.prisma.user.findUnique({ where: { username } });
+    if (user && (await bcrypt.compare(pass, user.password))) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
+  }
 }

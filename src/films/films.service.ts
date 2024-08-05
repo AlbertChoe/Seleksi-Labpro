@@ -20,20 +20,18 @@ export class FilmsService {
   ) {
     try {
       this.logger.log('Uploading video file');
-      const videoResult = await this.cloudflareR2Service.uploadFile(
+      const videoResult = await this.cloudflareR2Service.uploadFileMultipart(
         video.originalname,
         video.buffer,
-        video.mimetype,
       );
       this.logger.log(`Video uploaded to ${videoResult}`);
 
       let coverImageResult = null;
       if (coverImage) {
         this.logger.log('Uploading cover image file');
-        coverImageResult = await this.cloudflareR2Service.uploadFile(
+        coverImageResult = await this.cloudflareR2Service.uploadFileMultipart(
           coverImage.originalname,
           coverImage.buffer,
-          coverImage.mimetype,
         );
         this.logger.log(`Cover image uploaded to ${coverImageResult}`);
       }
@@ -128,10 +126,9 @@ export class FilmsService {
         this.logger.log('Deleting old video file');
         await this.cloudflareR2Service.deleteFile(videoUrl);
         this.logger.log('Uploading new video file');
-        const videoResult = await this.cloudflareR2Service.uploadFile(
+        const videoResult = await this.cloudflareR2Service.uploadFileMultipart(
           video.originalname,
           video.buffer,
-          video.mimetype,
         );
         videoUrl = videoResult;
       }
@@ -140,11 +137,11 @@ export class FilmsService {
         this.logger.log('Deleting old cover image file');
         await this.cloudflareR2Service.deleteFile(coverImageUrl);
         this.logger.log('Uploading new cover image file');
-        const coverImageResult = await this.cloudflareR2Service.uploadFile(
-          coverImage.originalname,
-          coverImage.buffer,
-          coverImage.mimetype,
-        );
+        const coverImageResult =
+          await this.cloudflareR2Service.uploadFileMultipart(
+            coverImage.originalname,
+            coverImage.buffer,
+          );
         coverImageUrl = coverImageResult;
       }
 

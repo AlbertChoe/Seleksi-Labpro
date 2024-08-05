@@ -11,24 +11,36 @@
   <body class='bg-gray-100'>
     <div class='min-h-screen flex flex-col'>
       <!-- Navbar -->
-      <nav class='bg-blue-600 text-white p-4 flex justify-between items-center'>
-        <div class='flex items-center space-x-4'>
-          <a href='/browse' class='text-xl font-bold'>Home</a>
-          {{#if isLoggedIn}}
-            <a href='/my-list' class='text-xl'>My List</a>
-          {{/if}}
-        </div>
-        <div class='flex items-center space-x-4'>
-          {{#if isLoggedIn}}
-            <span class='text-xl'>Username: {{username}}</span>
-            <span class='text-xl'>Balance: ${{balance}}</span>
-          {{else}}
-            <a href='/login' class='text-xl'>Login</a>
-          {{/if}}
+      <nav class='bg-blue-600 text-white p-6'>
+        <div
+          class='container mx-auto flex flex-wrap justify-between items-center'
+        >
+          <div class='flex items-center space-x-6'>
+            <a href='/' class='text-xl font-bold hover:underline'>OWCA FILM</a>
+            {{#if isLoggedIn}}
+              <a href='/my-list' class='text-xl hover:underline'>My List</a>
+            {{/if}}
+          </div>
+          <div class='flex items-center space-x-6 mt-4 lg:mt-0'>
+            {{#if isLoggedIn}}
+              <div class='bg-white text-blue-600 px-3 py-1 rounded-md text-xl'>
+                {{username}}
+              </div>
+              <span class='text-xl text-yellow-300'>Balance: ${{balance}}</span>
+              <a
+                href='/logout'
+                class='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
+              >
+                Logout
+              </a>
+            {{else}}
+              <a href='/login' class='text-xl hover:underline'>Login</a>
+            {{/if}}
+          </div>
         </div>
       </nav>
       <!-- Page Content -->
-      <main class='flex-1 p-4'>
+      <main class='flex-1 p-4 container mx-auto'>
         {{{body}}}
       </main>
     </div>
