@@ -1,34 +1,29 @@
 {{! Do not use #extend and #content }}
 {{! Use the default layout and include the partial within the layout body }}
 <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-  <h1 class='text-3xl font-bold leading-tight text-gray-900'>Browse Films</h1>
-
-  <div class='mt-6'>
-    <input
-      type='text'
-      placeholder='Search for films...'
-      class='w-full p-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
-    />
-  </div>
+  <h1 class='text-3xl font-bold mb-4'>My List</h1>
 
   <div class='mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
-    {{#each films}}
+    {{#each purchases}}
       <div class='bg-white p-6 rounded-lg shadow-lg'>
         <img
-          src='{{this.coverImageUrl}}'
+          src='{{this.film.coverImageUrl}}'
           alt='Film cover'
           class='w-full h-40 object-cover rounded-md'
         />
         <div class='mt-4'>
-          <h3 class='text-lg font-bold'>{{this.title}}</h3>
-          <p class='mt-2 text-sm text-gray-600'>Director: {{this.director}}</p>
+          <h3 class='text-lg font-bold'>{{this.film.title}}</h3>
+          <p class='mt-2 text-sm text-gray-600'>Director:
+            {{this.film.director}}</p>
           <p class='mt-2 text-sm text-gray-600'>Release Year:
-            {{this.releaseYear}}</p>
-          <p class='mt-2 text-sm text-gray-600'>Genre: {{this.genre}}</p>
+            {{this.film.releaseYear}}</p>
+          <p class='mt-2 text-sm text-gray-600'>Genre: {{this.film.genre}}</p>
           <div class='mt-4 flex justify-between items-center'>
-            <span class='text-xl font-bold text-gray-900'>${{this.price}}</span>
+            <span
+              class='text-xl font-bold text-gray-900'
+            >${{this.film.price}}</span>
             <a
-              href='/films/{{this.id}}'
+              href='/films/{{this.film.id}}'
               class='text-blue-500 hover:underline'
             >Details</a>
           </div>

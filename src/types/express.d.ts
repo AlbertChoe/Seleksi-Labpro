@@ -1,7 +1,14 @@
-import { User } from '@prisma/client'; // Adjust the import according to your user model
+import { User } from '@prisma/client';
 
-declare module 'express' {
-  export interface Request {
-    user?: { userId: number; username: string; role: string }; // or a more specific type if you have one
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        username: string;
+        role: string;
+        balance?: number;
+      };
+    }
   }
 }

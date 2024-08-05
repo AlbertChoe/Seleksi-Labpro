@@ -48,26 +48,49 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
       const token = await this.authService.login(loginDto);
       this.logger.log('Login successful, setting cookie and redirecting');
       res.cookie('token', token, { httpOnly: true });
-      res.status(200).json({
-        status: 'success',
-        message: 'Login successful',
-        data: {
-          username: loginDto.username,
-          token: token,
-        },
-      });
+
+      const acceptHeader = req.headers['accept'];
+
+      // Check if the request accepts HTML or JSON
+      if (acceptHeader && acceptHeader.includes('application/json')) {
+        // Respond with JSON for frontend admin
+        res.status(200).json({
+          status: 'success',
+          message: 'Login successful',
+          data: {
+            username: loginDto.username,
+            token: token,
+          },
+        });
+      } else {
+        // Redirect for your own frontend
+        res.redirect('/');
+      }
     } catch (error) {
       this.logger.error('Login failed', error.stack);
-      res.status(400).json({
-        status: 'error',
-        message: 'Login failed',
-        data: null,
-      });
+
+      const acceptHeader = req.headers['accept'];
+
+      if (acceptHeader && acceptHeader.includes('application/json')) {
+        // Respond with JSON for frontend admin
+        res.status(400).json({
+          status: 'error',
+          message: 'Login failed',
+          data: null,
+        });
+      } else {
+        // Handle the error for your own frontend
+        res.status(400).send('Login failed');
+      }
     }
   }
 

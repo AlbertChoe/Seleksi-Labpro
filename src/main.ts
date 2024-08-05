@@ -5,6 +5,9 @@ import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { WinstonModule } from 'nest-winston';
 import { winstonLogger } from './logger/winston-logger';
+import * as exphbs from 'express-handlebars'; // Adjusted import
+import * as handlebarsLayouts from 'handlebars-layouts';
+import * as Handlebars from 'handlebars';
 
 const port = process.env.PORT || 3000;
 console.log(
@@ -20,6 +23,19 @@ async function bootstrap() {
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
+
+  // Register Handlebars Layouts helpers
+  Handlebars.registerHelper(handlebarsLayouts(Handlebars));
+
+  // Set up Handlebars as the view engine
+  app.engine(
+    'hbs',
+    exphbs.engine({
+      extname: 'hbs',
+      layoutsDir: join(__dirname, '..', 'views/layouts'),
+      defaultLayout: 'main',
+    }),
+  );
   app.setViewEngine('hbs');
 
   const config = new DocumentBuilder()

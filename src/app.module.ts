@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,6 +12,7 @@ import { FilmsService } from './films/films.service';
 import { FilmsController } from './films/films.controller';
 import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
+import { UserMiddleware } from './middleware/user.middleware';
 
 @Module({
   imports: [
@@ -22,7 +23,18 @@ import { UserController } from './user/user.controller';
     PrismaModule,
     AuthModule,
   ],
-  controllers: [AppController, UploadController, FilmsController, UserController],
+  controllers: [
+    AppController,
+    UploadController,
+    FilmsController,
+    UserController,
+  ],
   providers: [AppService, CloudflareR2Service, FilmsService, UserService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(UserMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
