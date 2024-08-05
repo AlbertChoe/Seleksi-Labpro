@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   Logger,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import {
   FileFieldsInterceptor,
@@ -71,15 +72,27 @@ export class FilmsController {
   }
 
   @Get()
-  findAll() {
+  async findAll(@Query('q') q: string) {
     this.logger.log('Fetching all films');
-    return this.filmsService.findAll();
+    const films = await this.filmsService.findAll(q);
+    return {
+      status: 'success',
+      message: 'Films fetched successfully',
+      data: films,
+    };
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
     this.logger.log(`Fetching film with id ${id}`);
     const film = await this.filmsService.findOne(id);
+    if (!film) {
+      return {
+        status: 'error',
+        message: 'Film not found',
+        data: null,
+      };
+    }
     return {
       status: 'success',
       message: 'Film fetched successfully',

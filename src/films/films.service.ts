@@ -25,7 +25,7 @@ export class FilmsService {
         video.buffer,
         video.mimetype,
       );
-      this.logger.log(`Video uploaded to ${videoResult.Location}`);
+      this.logger.log(`Video uploaded to ${videoResult}`);
 
       let coverImageResult = null;
       if (coverImage) {
@@ -35,7 +35,7 @@ export class FilmsService {
           coverImage.buffer,
           coverImage.mimetype,
         );
-        this.logger.log(`Cover image uploaded to ${coverImageResult.Location}`);
+        this.logger.log(`Cover image uploaded to ${coverImageResult}`);
       }
 
       this.logger.log('Creating film record in database');
@@ -48,8 +48,8 @@ export class FilmsService {
           ),
           price: parseInt(createFilmDto.price as unknown as string, 10),
           duration: parseInt(createFilmDto.duration as unknown as string, 10),
-          videoUrl: videoResult.Location,
-          coverImageUrl: coverImageResult?.Location || null,
+          videoUrl: videoResult,
+          coverImageUrl: coverImageResult || null,
         },
       });
       this.logger.log('Film record created successfully');
@@ -60,14 +60,53 @@ export class FilmsService {
     }
   }
 
-  async findAll() {
+  async findAll(q?: string) {
     this.logger.log('Fetching all films from database');
-    return this.prisma.film.findMany();
+    let films;
+    if (q) {
+      films = await this.prisma.film.findMany({
+        where: {
+          OR: [
+            { title: { contains: q, mode: 'insensitive' } },
+            { director: { contains: q, mode: 'insensitive' } },
+          ],
+        },
+      });
+    } else {
+      films = await this.prisma.film.findMany();
+    }
+    return films.map((film) => ({
+      id: film.id,
+      title: film.title,
+      director: film.director,
+      release_year: film.release_year,
+      genre: film.genre,
+      price: film.price,
+      duration: film.duration,
+      cover_image_url: film.coverImageUrl,
+      created_at: film.createdAt.toISOString(),
+      updated_at: film.updatedAt.toISOString(),
+    }));
   }
 
   async findOne(id: string) {
     this.logger.log(`Fetching film with id ${id} from database`);
-    return this.prisma.film.findUnique({ where: { id } });
+    const film = await this.prisma.film.findUnique({ where: { id } });
+    if (!film) return null;
+    return {
+      id: film.id,
+      title: film.title,
+      description: film.description,
+      director: film.director,
+      release_year: film.release_year,
+      genre: film.genre,
+      price: film.price,
+      duration: film.duration,
+      video_url: film.videoUrl,
+      cover_image_url: film.coverImageUrl,
+      created_at: film.createdAt.toISOString(),
+      updated_at: film.updatedAt.toISOString(),
+    };
   }
 
   async update(
@@ -94,7 +133,7 @@ export class FilmsService {
           video.buffer,
           video.mimetype,
         );
-        videoUrl = videoResult.Location;
+        videoUrl = videoResult;
       }
 
       if (coverImage) {
@@ -106,7 +145,7 @@ export class FilmsService {
           coverImage.buffer,
           coverImage.mimetype,
         );
-        coverImageUrl = coverImageResult.Location;
+        coverImageUrl = coverImageResult;
       }
 
       this.logger.log('Updating film record in database');
@@ -114,6 +153,12 @@ export class FilmsService {
         where: { id },
         data: {
           ...updateFilmDto,
+          price: parseInt(updateFilmDto.price as unknown as string, 10),
+          release_year: parseInt(
+            updateFilmDto.release_year as unknown as string,
+            10,
+          ),
+          duration: parseInt(updateFilmDto.duration as unknown as string, 10),
           videoUrl,
           coverImageUrl,
         },
