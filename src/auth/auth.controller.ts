@@ -14,7 +14,15 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller()
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
@@ -23,12 +31,21 @@ export class AuthController {
 
   @Get('register')
   @Render('register')
+  @ApiOperation({ summary: 'Render the registration form' })
+  @ApiResponse({
+    status: 200,
+    description: 'Registration form rendered successfully',
+  })
   showRegistrationForm() {
     this.logger.log('Rendering registration form');
     return {};
   }
 
   @Post('register')
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'User registered successfully' })
+  @ApiResponse({ status: 400, description: 'Registration failed' })
   async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     try {
       this.logger.log('Registering new user');
@@ -48,6 +65,9 @@ export class AuthController {
   }
 
   @Post('login')
+  @Render('login')
+  @ApiOperation({ summary: 'Render the login form' })
+  @ApiResponse({ status: 200, description: 'Login form rendered successfully' })
   async login(
     @Body() loginDto: LoginDto,
     @Res() res: Response,
@@ -105,6 +125,13 @@ export class AuthController {
 
   @Get('self')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get profile of the authenticated user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile fetched successfully',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   getProfile(@Req() req: Request) {
     try {
       const user = req.user;

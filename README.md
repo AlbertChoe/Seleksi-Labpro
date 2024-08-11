@@ -45,6 +45,23 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Swagger
+
+Run this commnad to start swagger
+The host will be http://127.0.0.1:4000/api/panel
+
+```bash
+$ npm run start:swagger
+
+```
+
+- IF the api is not refresh when developing then do this
+
+```bash
+$ npm run build
+$ npm run start:swagger
+```
+
 ## Test
 
 ```bash

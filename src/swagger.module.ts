@@ -11,7 +11,6 @@ export class CustomSwaggerModule {
       .setTitle('Seleksi Labpro API')
       .setDescription('The API description')
       .setVersion('1.0')
-      .addTag('api')
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api/panel', app, document);

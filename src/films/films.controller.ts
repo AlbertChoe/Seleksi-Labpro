@@ -10,12 +10,10 @@ import {
   UploadedFiles,
   UseInterceptors,
   Logger,
-  UploadedFile,
   Query,
 } from '@nestjs/common';
 import {
   FileFieldsInterceptor,
-  FileInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
 import { FilmsService } from './films.service';
@@ -25,7 +23,18 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiParam,
+} from '@nestjs/swagger';
 
+@ApiTags('films')
+@ApiBearerAuth()
 @Controller('films')
 export class FilmsController {
   private readonly logger = new Logger(FilmsController.name);
@@ -41,6 +50,13 @@ export class FilmsController {
       { name: 'cover_image', maxCount: 1 },
     ]),
   )
+  @ApiOperation({ summary: 'Create a new film' })
+  @ApiResponse({ status: 201, description: 'Film created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiBody({
+    description: 'Film data to create',
+    type: CreateFilmDto,
+  })
   async create(
     @Body() createFilmDto: CreateFilmDto,
     @UploadedFiles()
@@ -54,10 +70,6 @@ export class FilmsController {
     this.logger.log('Entered create method');
     this.logger.log(`Video file received: ${video}`);
     this.logger.log(`Image file received: ${coverImage}`);
-    // this.logger.log(`Video file received: ${video ? video.filename : 'none'}`);
-    // this.logger.log(
-    //   `Cover image file received: ${coverImage ? coverImage.filename : 'none'}`,
-    // );
 
     const film = await this.filmsService.create(
       createFilmDto,
@@ -72,6 +84,15 @@ export class FilmsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all films' })
+  @ApiResponse({ status: 200, description: 'Films fetched successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiQuery({
+    name: 'q',
+    required: false,
+    description: 'Search query for films',
+    type: String,
+  })
   async findAll(@Query('q') q: string) {
     this.logger.log('Fetching all films');
     const films = await this.filmsService.findAll(q);
@@ -83,6 +104,10 @@ export class FilmsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a film by id' })
+  @ApiResponse({ status: 200, description: 'Film fetched successfully' })
+  @ApiResponse({ status: 404, description: 'Film not found' })
+  @ApiParam({ name: 'id', type: String, description: 'Film ID' })
   async findOne(@Param('id') id: string) {
     this.logger.log(`Fetching film with id ${id}`);
     const film = await this.filmsService.findOne(id);
@@ -104,6 +129,15 @@ export class FilmsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @UseInterceptors(FilesInterceptor('files'))
+  @ApiOperation({ summary: 'Update a film by id' })
+  @ApiResponse({ status: 200, description: 'Film updated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 404, description: 'Film not found' })
+  @ApiParam({ name: 'id', type: String, description: 'Film ID' })
+  @ApiBody({
+    description: 'Film data to update',
+    type: UpdateFilmDto,
+  })
   async update(
     @Param('id') id: string,
     @Body() updateFilmDto: UpdateFilmDto,
@@ -132,6 +166,10 @@ export class FilmsController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Delete a film by id' })
+  @ApiResponse({ status: 200, description: 'Film deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Film not found' })
+  @ApiParam({ name: 'id', type: String, description: 'Film ID' })
   async remove(@Param('id') id: string) {
     this.logger.log(`Deleting film with id ${id}`);
     await this.filmsService.remove(id);

@@ -71,4 +71,11 @@ export class UserService {
     });
     return user;
   }
+
+  async getUserPurchases(userId: string) {
+    return this.prisma.purchase.findMany({
+      where: { userId },
+      include: { film: true },
+    });
+  }
 }
