@@ -8,8 +8,6 @@ import {
   Query,
   UseGuards,
   Logger,
-  Render,
-  Req,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -23,14 +21,13 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { Request } from 'express';
 
-@ApiTags('users')
+@ApiTags('api-users')
 @ApiBearerAuth()
-@Controller('users')
+@Controller('api/users')
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class UserController {
-  private readonly logger = new Logger(UserController.name);
+export class ApiUserController {
+  private readonly logger = new Logger(ApiUserController.name);
 
   constructor(private readonly userService: UserService) {}
 
@@ -159,82 +156,6 @@ export class UserController {
       data: {
         ...user,
       },
-    };
-  }
-
-  @Get('my-list')
-  @Render('my-list')
-  @ApiOperation({
-    summary: "Retrieve user's list page",
-    description:
-      "Fetches the user's purchase list and associated film details if the user is logged in.",
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Successful response',
-    schema: {
-      type: 'object',
-      properties: {
-        isLoggedIn: {
-          type: 'boolean',
-          description: 'Indicates if the user is logged in',
-        },
-        username: {
-          type: 'string',
-          description: 'Username of the logged-in user',
-        },
-        balance: { type: 'number', description: 'Account balance of the user' },
-        purchases: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'integer', description: 'Purchase ID' },
-              userId: { type: 'integer', description: 'User ID' },
-              filmId: { type: 'integer', description: 'Film ID' },
-              film: {
-                type: 'object',
-                properties: {
-                  id: { type: 'integer', description: 'Film ID' },
-                  title: { type: 'string', description: 'Title of the film' },
-                  description: {
-                    type: 'string',
-                    description: 'Description of the film',
-                  },
-                  releaseDate: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'Release date of the film',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized, user not logged in',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Unauthorized' },
-      },
-    },
-  })
-  async getMyListPage(@Req() req: Request) {
-    const user = req.user || null;
-    const purchases = user
-      ? await this.userService.getUserPurchases(user.id)
-      : [];
-
-    return {
-      isLoggedIn: !!user,
-      username: user?.username || '',
-      balance: user?.balance || 0,
-      purchases,
     };
   }
 }

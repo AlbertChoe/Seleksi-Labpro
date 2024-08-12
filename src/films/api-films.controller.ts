@@ -33,11 +33,11 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 
-@ApiTags('films')
+@ApiTags('/api/films')
 @ApiBearerAuth()
-@Controller('films')
-export class FilmsController {
-  private readonly logger = new Logger(FilmsController.name);
+@Controller('api/films')
+export class ApiFilmsController {
+  private readonly logger = new Logger(ApiFilmsController.name);
 
   constructor(private readonly filmsService: FilmsService) {}
 

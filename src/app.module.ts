@@ -8,11 +8,11 @@ import { WinstonModule } from 'nest-winston';
 import { winstonLogger } from './logger/winston-logger';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { FilmsModule } from './films/films.module';
 import { FilmsService } from './films/films.service';
-import { FilmsController } from './films/films.controller';
-import { UserService } from './user/user.service';
-import { UserController } from './user/user.controller';
+import { UserModule } from './user/user.module';
 import { UserMiddleware } from './middleware/user.middleware';
+import { CloudflareR2Module } from './cloudflare-r2/cloudfare-r2.module';
 
 @Module({
   imports: [
@@ -22,19 +22,18 @@ import { UserMiddleware } from './middleware/user.middleware';
     }),
     PrismaModule,
     AuthModule,
+    UserModule,
+    FilmsModule,
+    CloudflareR2Module,
   ],
-  controllers: [
-    AppController,
-    UploadController,
-    FilmsController,
-    UserController,
-  ],
-  providers: [AppService, CloudflareR2Service, FilmsService, UserService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(UserMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+    consumer.apply(UserMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.ALL,
+    });
   }
 }
