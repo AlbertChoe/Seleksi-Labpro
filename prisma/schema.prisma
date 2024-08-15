@@ -44,8 +44,8 @@ model Purchase {
   filmId    String
   createdAt DateTime @default(now())
 
- user      User     @relation(fields: [userId], references: [id])
-  film      Film     @relation(fields: [filmId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  film      Film     @relation(fields: [filmId], references: [id], onDelete: Cascade)
 
   @@unique([userId, filmId])
 }
