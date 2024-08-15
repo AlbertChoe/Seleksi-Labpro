@@ -191,4 +191,42 @@ export class FilmsService {
       throw error;
     }
   }
+
+  async isFilmPurchasedByUser(
+    userId: string,
+    filmId: string,
+  ): Promise<boolean> {
+    this.logger.log(`Checking if user ${userId} has purchased film ${filmId}`);
+    const purchase = await this.prisma.purchase.findFirst({
+      where: {
+        userId,
+        filmId,
+      },
+    });
+    return !!purchase;
+  }
+
+  async purchaseFilm(userId: string, filmId: string, price: number) {
+    this.logger.log(`Processing purchase of film ${filmId} by user ${userId}`);
+
+    // Deduct balance
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        balance: {
+          decrement: price,
+        },
+      },
+    });
+
+    // Record purchase
+    await this.prisma.purchase.create({
+      data: {
+        userId,
+        filmId,
+      },
+    });
+
+    this.logger.log('Purchase recorded and balance updated');
+  }
 }

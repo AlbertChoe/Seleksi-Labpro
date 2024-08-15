@@ -3,6 +3,12 @@ import { Request, Response, NextFunction } from 'express';
 import { PrismaService } from '../prisma/prisma.service';
 import * as jwt from 'jsonwebtoken';
 
+interface JwtPayload {
+  userId: string;
+  username: string;
+  role: string;
+}
+
 @Injectable()
 export class UserMiddleware implements NestMiddleware {
   private readonly logger = new Logger(UserMiddleware.name);
@@ -22,17 +28,19 @@ export class UserMiddleware implements NestMiddleware {
           token,
           process.env.JWT_SECRET || 'secretKey',
         ) as JwtPayload;
+
         const user = await this.prisma.user.findUnique({
           where: { id: decodedToken.userId },
         });
 
         if (user) {
-          req.user = {
+          req.user = Object.freeze({
             id: user.id,
             username: user.username,
             balance: user.balance,
             role: user.role,
-          };
+          });
+
           this.logger.log(
             `User Middleware - User: ${JSON.stringify(req.user)}`,
           );
