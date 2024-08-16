@@ -18,7 +18,7 @@
           <div class='flex items-center space-x-6'>
             <a href='/' class='text-xl font-bold hover:underline'>OWCA FILM</a>
             {{#if isLoggedIn}}
-              <a href='/my-list' class='text-xl hover:underline'>My List</a>
+              <a href='/users/my-list' class='text-xl hover:underline'>My List</a>
             {{/if}}
           </div>
           <div class='flex items-center space-x-6 mt-4 lg:mt-0'>
@@ -27,12 +27,15 @@
                 {{username}}
               </div>
               <span class='text-xl text-yellow-300'>Balance: ${{balance}}</span>
-              <a
-                href='/logout'
-                class='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
-              >
-                Logout
-              </a>
+              <!-- Logout Form -->
+              <form action='/logout' method='POST' class='inline'>
+                <button
+                  type='submit'
+                  class='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
+                >
+                  Logout
+                </button>
+              </form>
             {{else}}
               <a href='/login' class='text-xl hover:underline'>Login</a>
             {{/if}}

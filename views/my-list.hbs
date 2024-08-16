@@ -1,50 +1,36 @@
-{{! Do not use #extend and #content }}
-{{! Use the default layout and include the partial within the layout body }}
-<div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-  <h1 class='text-3xl font-bold mb-4'>My List</h1>
+<main class='flex-1 p-8 container mx-auto'>
+  <h1 class='text-3xl font-bold mb-6 text-blue-700'>My List</h1>
 
-  <div class='mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
-    {{#each purchases}}
-      <div class='bg-white p-6 rounded-lg shadow-lg'>
-        <img
-          src='{{this.film.coverImageUrl}}'
-          alt='Film cover'
-          class='w-full h-40 object-cover rounded-md'
-        />
-        <div class='mt-4'>
-          <h3 class='text-lg font-bold'>{{this.film.title}}</h3>
-          <p class='mt-2 text-sm text-gray-600'>Director:
-            {{this.film.director}}</p>
-          <p class='mt-2 text-sm text-gray-600'>Release Year:
-            {{this.film.releaseYear}}</p>
-          <p class='mt-2 text-sm text-gray-600'>Genre: {{this.film.genre}}</p>
-          <div class='mt-4 flex justify-between items-center'>
-            <span
-              class='text-xl font-bold text-gray-900'
-            >${{this.film.price}}</span>
-            <a
-              href='/films/{{this.film.id}}'
-              class='text-blue-500 hover:underline'
-            >Details</a>
+  {{#if purchases.length}}
+    <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+      {{#each purchases}}
+        <div
+          class='bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between'
+        >
+          <div>
+            <img
+              src='{{this.film.coverImageUrl}}'
+              alt='{{this.film.title}}'
+              class='rounded-lg mb-4 w-full h-40 object-cover'
+            />
+            <h2
+              class='text-2xl font-semibold text-gray-800 mb-2'
+            >{{this.film.title}}</h2>
+            <p class='text-gray-600 mb-4'>Purchased on {{this.createdAt}}</p>
+            <p class='text-gray-700 mb-4'>{{this.film.description}}</p>
+            <p class='text-gray-500 text-sm'>Directed by:
+              {{this.film.director}}</p>
           </div>
+          <a
+            href='/films/{{this.film.id}}/watch'
+            class='mt-6 inline-block text-center bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300'
+          >
+            Watch Now
+          </a>
         </div>
-      </div>
-    {{/each}}
-  </div>
-
-  <!-- Pagination Controls -->
-  <div class='mt-6 flex justify-center'>
-    {{#if hasPrev}}
-      <a
-        href='?page={{prevPage}}'
-        class='px-3 py-1 bg-white border rounded-md shadow-sm text-gray-700 hover:bg-gray-50'
-      >Previous</a>
-    {{/if}}
-    {{#if hasNext}}
-      <a
-        href='?page={{nextPage}}'
-        class='ml-2 px-3 py-1 bg-white border rounded-md shadow-sm text-gray-700 hover:bg-gray-50'
-      >Next</a>
-    {{/if}}
-  </div>
-</div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p class='text-lg text-gray-600'>You have not purchased any items yet.</p>
+  {{/if}}
+</main>

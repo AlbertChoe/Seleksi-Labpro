@@ -15,6 +15,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 import { Request, Response } from 'express';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('films')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -105,8 +106,11 @@ export class WebFilmsController {
     }
 
     const film = await this.filmsService.findOne(id);
+
+    const genres = film.genre.join(', ');
+
     return {
-      film,
+      film: { ...film, genre: genres },
       isLoggedIn: !!user,
       username: user?.username || '',
       balance: user?.balance || 0,

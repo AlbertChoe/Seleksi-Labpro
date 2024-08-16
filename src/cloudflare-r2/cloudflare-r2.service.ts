@@ -35,9 +35,35 @@ export class CloudflareR2Service {
     key: string,
     body: Buffer | string,
   ): Promise<string> {
+    // Determine the Content-Type based on the file extension
+    let contentType = 'application/octet-stream'; // Default
+
+    // Video formats
+    if (key.endsWith('.mp4')) {
+      contentType = 'video/mp4';
+    } else if (key.endsWith('.avi')) {
+      contentType = 'video/x-msvideo';
+    } else if (key.endsWith('.mov')) {
+      contentType = 'video/quicktime';
+    } else if (key.endsWith('.wmv')) {
+      contentType = 'video/x-ms-wmv';
+    }
+
+    // Image formats
+    else if (key.endsWith('.jpg') || key.endsWith('.jpeg')) {
+      contentType = 'image/jpeg';
+    } else if (key.endsWith('.png')) {
+      contentType = 'image/png';
+    } else if (key.endsWith('.gif')) {
+      contentType = 'image/gif';
+    } else if (key.endsWith('.webp')) {
+      contentType = 'image/webp';
+    }
+
     const createCommand = new CreateMultipartUploadCommand({
       Bucket: this.bucketName,
       Key: key,
+      ContentType: contentType,
     });
 
     const uploadResponse = await this.s3Client.send(createCommand);
@@ -75,7 +101,13 @@ export class CloudflareR2Service {
       Key: key,
     });
 
-    return this.s3Client.send(command);
+    const file = await this.s3Client.send(command);
+
+    if (file.ContentType) {
+      file.ContentType = file.ContentType;
+    }
+
+    return file;
   }
 
   async deleteFile(url: string): Promise<void> {

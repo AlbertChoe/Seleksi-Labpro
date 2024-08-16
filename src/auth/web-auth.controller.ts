@@ -73,4 +73,17 @@ export class WebAuthController {
       res.status(400).send('Login failed');
     }
   }
+
+  @Post('logout')
+  async logout(@Res() res: Response, @Req() req: Request) {
+    try {
+      this.logger.log('Logging out user');
+      res.clearCookie('token');
+      req.user = null;
+      res.redirect('/login'); // Redirect to login page or another route
+    } catch (error) {
+      this.logger.error('Logout failed', error.stack);
+      res.status(400).send('Logout failed');
+    }
+  }
 }
