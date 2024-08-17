@@ -1,19 +1,29 @@
 <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
   <h1 class='text-3xl font-bold leading-tight text-gray-900'>Browse Films</h1>
 
+  <!-- Search Form -->
   <div class='mt-6'>
-    <input
-      type='text'
-      placeholder='Search for films...'
-      class='w-full p-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
-    />
+    <form action='/' method='GET' class='flex items-center'>
+      <input
+        type='text'
+        name='q'
+        placeholder='Search for films...'
+        value='{{query}}'
+        class='flex-grow p-2 border rounded-l-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+      />
+      <button
+        type='submit'
+        class='px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-800'
+      >Search</button>
+    </form>
   </div>
 
+  <!-- Films Grid -->
   <div class='mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
     {{#each films}}
       <div class='bg-white p-6 rounded-lg shadow-lg'>
         <img
-          src='{{this.coverImageUrl}}'
+          src='{{this.cover_image_url}}'
           alt='Film cover'
           class='w-full h-40 object-cover rounded-md'
         />
@@ -21,7 +31,7 @@
           <h3 class='text-lg font-bold'>{{this.title}}</h3>
           <p class='mt-2 text-sm text-gray-600'>Director: {{this.director}}</p>
           <p class='mt-2 text-sm text-gray-600'>Release Year:
-            {{this.releaseYear}}</p>
+            {{this.release_year}}</p>
           <p class='mt-2 text-sm text-gray-600'>Genre: {{this.genre}}</p>
           <div class='mt-4 flex justify-between items-center'>
             <span class='text-xl font-bold text-gray-900'>${{this.price}}</span>
@@ -39,13 +49,13 @@
   <div class='mt-6 flex justify-center'>
     {{#if hasPrev}}
       <a
-        href='?page={{prevPage}}'
+        href='?page={{prevPage}}&q={{query}}'
         class='px-3 py-1 bg-white border rounded-md shadow-sm text-gray-700 hover:bg-gray-50'
       >Previous</a>
     {{/if}}
     {{#if hasNext}}
       <a
-        href='?page={{nextPage}}'
+        href='?page={{nextPage}}&q={{query}}'
         class='ml-2 px-3 py-1 bg-white border rounded-md shadow-sm text-gray-700 hover:bg-gray-50'
       >Next</a>
     {{/if}}

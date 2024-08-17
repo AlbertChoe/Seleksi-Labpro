@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
   Logger,
+  Res,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -21,6 +22,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 
 @ApiTags('api-users')
 @ApiBearerAuth()
@@ -52,15 +54,25 @@ export class ApiUserController {
       },
     },
   })
-  async getUsers(@Query('q') q: string) {
-    const users = await this.userService.findAll(q);
-    return {
-      status: 'success',
-      message: 'Users fetched successfully',
-      data: users.map((user) => ({
-        ...user,
-      })),
-    };
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  async getUsers(@Query('q') q: string, @Res() res: Response) {
+    try {
+      const users = await this.userService.findAll(q);
+      return res.status(200).json({
+        status: 'success',
+        message: 'Users fetched successfully',
+        data: users.map((user) => ({
+          ...user,
+        })),
+      });
+    } catch (error) {
+      this.logger.error('Failed to fetch users', error.stack);
+      return res.status(400).json({
+        status: 'error',
+        message: 'Failed to fetch users',
+        data: null,
+      });
+    }
   }
 
   @Get(':id')
@@ -82,15 +94,32 @@ export class ApiUserController {
       },
     },
   })
-  async getUser(@Param('id') id: string) {
-    const user = await this.userService.findOne(id);
-    return {
-      status: 'success',
-      message: 'User fetched successfully',
-      data: {
-        ...user,
-      },
-    };
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async getUser(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const user = await this.userService.findOne(id);
+      if (!user) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'User not found',
+          data: null,
+        });
+      }
+      return res.status(200).json({
+        status: 'success',
+        message: 'User fetched successfully',
+        data: {
+          ...user,
+        },
+      });
+    } catch (error) {
+      this.logger.error('Failed to fetch user', error.stack);
+      return res.status(400).json({
+        status: 'error',
+        message: 'Failed to fetch user',
+        data: null,
+      });
+    }
   }
 
   @Post(':id/balance')
@@ -112,21 +141,32 @@ export class ApiUserController {
       },
     },
   })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   async updateBalance(
     @Param('id') id: string,
     @Body() updateBalanceDto: UpdateBalanceDto,
+    @Res() res: Response,
   ) {
-    const user = await this.userService.updateBalance(
-      id,
-      updateBalanceDto.increment,
-    );
-    return {
-      status: 'success',
-      message: 'User balance updated successfully',
-      data: {
-        ...user,
-      },
-    };
+    try {
+      const user = await this.userService.updateBalance(
+        id,
+        updateBalanceDto.increment,
+      );
+      return res.status(200).json({
+        status: 'success',
+        message: 'User balance updated successfully',
+        data: {
+          ...user,
+        },
+      });
+    } catch (error) {
+      this.logger.error('Failed to update balance', error.stack);
+      return res.status(400).json({
+        status: 'error',
+        message: 'Failed to update balance',
+        data: null,
+      });
+    }
   }
 
   @Delete(':id')
@@ -148,14 +188,24 @@ export class ApiUserController {
       },
     },
   })
-  async deleteUser(@Param('id') id: string) {
-    const user = await this.userService.remove(id);
-    return {
-      status: 'success',
-      message: 'User deleted successfully',
-      data: {
-        ...user,
-      },
-    };
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async deleteUser(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const user = await this.userService.remove(id);
+      return res.status(200).json({
+        status: 'success',
+        message: 'User deleted successfully',
+        data: {
+          ...user,
+        },
+      });
+    } catch (error) {
+      this.logger.error('Failed to delete user', error.stack);
+      return res.status(400).json({
+        status: 'error',
+        message: 'Failed to delete user',
+        data: null,
+      });
+    }
   }
 }

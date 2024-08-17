@@ -9,5 +9,6 @@ import { CloudflareR2Module } from '../cloudflare-r2/cloudfare-r2.module'; // Im
   imports: [PrismaModule, CloudflareR2Module], // Import CloudflareR2Module here
   controllers: [ApiFilmsController, WebFilmsController],
   providers: [FilmsService],
+  exports: [FilmsService],
 })
 export class FilmsModule {}

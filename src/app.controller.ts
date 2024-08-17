@@ -1,22 +1,28 @@
-import { Controller, Get, Render, Req } from '@nestjs/common';
+import { Controller, Get, Render, Req, Query, Logger } from '@nestjs/common';
 import { Request } from 'express';
-import { PrismaService } from './prisma/prisma.service';
+import { FilmsService } from './films/films.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('App')
 @Controller()
 export class AppController {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(AppController.name);
+
+  constructor(private readonly filmsService: FilmsService) {}
 
   @Get('')
   @Render('browse')
   @ApiOperation({ summary: 'Render the browse page' })
   @ApiResponse({
     status: 200,
-    description: 'browse page rendered successfully',
+    description: 'Browse page rendered successfully',
   })
-  async getBrowsePage(@Req() req: Request) {
-    const films = await this.prisma.film.findMany();
+  async getBrowsePage(@Req() req: Request, @Query('q') q?: string) {
+    this.logger.log(
+      `Rendering browse page with search query: ${q || 'no query'}`,
+    );
+
+    const films = await this.filmsService.findAll(q);
     const user = req.user || null;
 
     return {

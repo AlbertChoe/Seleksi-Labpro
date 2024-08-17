@@ -11,6 +11,8 @@ import {
   UseInterceptors,
   Logger,
   Query,
+  Res,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   FileFieldsInterceptor,
@@ -32,6 +34,7 @@ import {
   ApiQuery,
   ApiParam,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 
 @ApiTags('/api/films')
 @ApiBearerAuth()
@@ -64,23 +67,33 @@ export class ApiFilmsController {
       video?: Express.Multer.File[];
       cover_image?: Express.Multer.File[];
     },
+    @Res() res: Response,
   ) {
-    const video = files.video ? files.video[0] : null;
-    const coverImage = files.cover_image ? files.cover_image[0] : null;
-    this.logger.log('Entered create method');
-    this.logger.log(`Video file received: ${video}`);
-    this.logger.log(`Image file received: ${coverImage}`);
+    try {
+      const video = files.video ? files.video[0] : null;
+      const coverImage = files.cover_image ? files.cover_image[0] : null;
+      this.logger.log('Entered create method');
+      this.logger.log(`Video file received: ${video}`);
+      this.logger.log(`Image file received: ${coverImage}`);
 
-    const film = await this.filmsService.create(
-      createFilmDto,
-      video,
-      coverImage,
-    );
-    return {
-      status: 'success',
-      message: 'Film created successfully',
-      data: film,
-    };
+      const film = await this.filmsService.create(
+        createFilmDto,
+        video,
+        coverImage,
+      );
+      return res.status(HttpStatus.CREATED).json({
+        status: 'success',
+        message: 'Film created successfully',
+        data: film,
+      });
+    } catch (error) {
+      this.logger.error('Error creating film', error.stack);
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: 'error',
+        message: 'Bad request',
+        data: null,
+      });
+    }
   }
 
   @Get()
@@ -93,14 +106,23 @@ export class ApiFilmsController {
     description: 'Search query for films',
     type: String,
   })
-  async findAll(@Query('q') q: string) {
-    this.logger.log('Fetching all films');
-    const films = await this.filmsService.findAll(q);
-    return {
-      status: 'success',
-      message: 'Films fetched successfully',
-      data: films,
-    };
+  async findAll(@Query('q') q: string, @Res() res: Response) {
+    try {
+      this.logger.log('Fetching all films');
+      const films = await this.filmsService.findAll(q);
+      return res.status(HttpStatus.OK).json({
+        status: 'success',
+        message: 'Films fetched successfully',
+        data: films,
+      });
+    } catch (error) {
+      this.logger.error('Error fetching films', error.stack);
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: 'error',
+        message: 'Bad request',
+        data: null,
+      });
+    }
   }
 
   @Get(':id')
@@ -108,21 +130,30 @@ export class ApiFilmsController {
   @ApiResponse({ status: 200, description: 'Film fetched successfully' })
   @ApiResponse({ status: 404, description: 'Film not found' })
   @ApiParam({ name: 'id', type: String, description: 'Film ID' })
-  async findOne(@Param('id') id: string) {
-    this.logger.log(`Fetching film with id ${id}`);
-    const film = await this.filmsService.findOne(id);
-    if (!film) {
-      return {
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    try {
+      this.logger.log(`Fetching film with id ${id}`);
+      const film = await this.filmsService.findOne(id);
+      if (!film) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          status: 'error',
+          message: 'Film not found',
+          data: null,
+        });
+      }
+      return res.status(HttpStatus.OK).json({
+        status: 'success',
+        message: 'Film fetched successfully',
+        data: film,
+      });
+    } catch (error) {
+      this.logger.error('Error fetching film', error.stack);
+      return res.status(HttpStatus.BAD_REQUEST).json({
         status: 'error',
-        message: 'Film not found',
+        message: 'Bad request',
         data: null,
-      };
+      });
     }
-    return {
-      status: 'success',
-      message: 'Film fetched successfully',
-      data: film,
-    };
   }
 
   @Put(':id')
@@ -142,25 +173,35 @@ export class ApiFilmsController {
     @Param('id') id: string,
     @Body() updateFilmDto: UpdateFilmDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
+    @Res() res: Response,
   ) {
-    this.logger.log(`Updating film with id ${id}`);
-    const video = files
-      ? files.find((file) => file.fieldname === 'video')
-      : null;
-    const coverImage = files
-      ? files.find((file) => file.fieldname === 'coverImage')
-      : null;
-    const film = await this.filmsService.update(
-      id,
-      updateFilmDto,
-      video,
-      coverImage,
-    );
-    return {
-      status: 'success',
-      message: 'Film updated successfully',
-      data: film,
-    };
+    try {
+      this.logger.log(`Updating film with id ${id}`);
+      const video = files
+        ? files.find((file) => file.fieldname === 'video')
+        : null;
+      const coverImage = files
+        ? files.find((file) => file.fieldname === 'coverImage')
+        : null;
+      const film = await this.filmsService.update(
+        id,
+        updateFilmDto,
+        video,
+        coverImage,
+      );
+      return res.status(HttpStatus.OK).json({
+        status: 'success',
+        message: 'Film updated successfully',
+        data: film,
+      });
+    } catch (error) {
+      this.logger.error('Error updating film', error.stack);
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: 'error',
+        message: 'Bad request',
+        data: null,
+      });
+    }
   }
 
   @Delete(':id')
@@ -170,13 +211,22 @@ export class ApiFilmsController {
   @ApiResponse({ status: 200, description: 'Film deleted successfully' })
   @ApiResponse({ status: 404, description: 'Film not found' })
   @ApiParam({ name: 'id', type: String, description: 'Film ID' })
-  async remove(@Param('id') id: string) {
-    this.logger.log(`Deleting film with id ${id}`);
-    await this.filmsService.remove(id);
-    return {
-      status: 'success',
-      message: 'Film deleted successfully',
-      data: null,
-    };
+  async remove(@Param('id') id: string, @Res() res: Response) {
+    try {
+      this.logger.log(`Deleting film with id ${id}`);
+      await this.filmsService.remove(id);
+      return res.status(HttpStatus.OK).json({
+        status: 'success',
+        message: 'Film deleted successfully',
+        data: null,
+      });
+    } catch (error) {
+      this.logger.error('Error deleting film', error.stack);
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: 'error',
+        message: 'Bad request',
+        data: null,
+      });
+    }
   }
 }

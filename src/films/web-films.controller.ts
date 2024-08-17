@@ -18,14 +18,12 @@ import { Request, Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('films')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class WebFilmsController {
   private readonly logger = new Logger(WebFilmsController.name);
 
   constructor(private readonly filmsService: FilmsService) {}
 
   @Get(':id')
-  @Roles(Role.User)
   @Render('film-details')
   async getFilmDetailsPage(@Param('id') id: string, @Req() req: Request) {
     this.logger.log(`Rendering film details page for id ${id}`);
@@ -56,13 +54,17 @@ export class WebFilmsController {
   }
 
   @Post(':id/purchase')
-  @Roles(Role.User)
   async purchaseFilm(
     @Param('id') id: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     const user = req.user;
+
+    if (!user) {
+      return res.redirect('/login');
+    }
+
     this.logger.log(`User ${user.id} attempting to purchase film ${id}`);
 
     const film = await this.filmsService.findOne(id);
@@ -71,6 +73,7 @@ export class WebFilmsController {
       return res.status(404).json({
         status: 'error',
         message: 'Film not found',
+        data: null,
       });
     }
 
@@ -79,6 +82,7 @@ export class WebFilmsController {
       return res.status(400).json({
         status: 'error',
         message: 'Insufficient balance',
+        data: null,
       });
     }
 
@@ -87,6 +91,7 @@ export class WebFilmsController {
   }
 
   @Get(':id/watch')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User)
   @Render('film-watch')
   async watchFilm(@Param('id') id: string, @Req() req: Request) {

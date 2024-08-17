@@ -3,10 +3,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
 import { CloudflareR2Service } from '../cloudflare-r2/cloudflare-r2.service';
-
+import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class FilmsService {
   private readonly logger = new Logger(FilmsService.name);
+  private readonly defaultCoverImageUrl =
+    'https://pub-5b37e409c44047f8be99633ef99badb5.r2.dev/png-transparent-clap-board-illustration-cinema-film-clapperboard-computer-icons-cine-miscellaneous-television-angle-thumbnail.png';
 
   constructor(
     private readonly prisma: PrismaService,
@@ -19,9 +21,15 @@ export class FilmsService {
     coverImage: Express.Multer.File,
   ) {
     try {
+      // Generate unique filenames
+      const uniqueVideoFilename = `${uuidv4()}-${video.originalname}`;
+      const uniqueCoverImageFilename = coverImage
+        ? `${uuidv4()}-${coverImage.originalname}`
+        : null;
+
       this.logger.log('Uploading video file');
       const videoResult = await this.cloudflareR2Service.uploadFileMultipart(
-        video.originalname,
+        uniqueVideoFilename,
         video.buffer,
       );
       this.logger.log(`Video uploaded to ${videoResult}`);
@@ -30,7 +38,7 @@ export class FilmsService {
       if (coverImage) {
         this.logger.log('Uploading cover image file');
         coverImageResult = await this.cloudflareR2Service.uploadFileMultipart(
-          coverImage.originalname,
+          uniqueCoverImageFilename,
           coverImage.buffer,
         );
         this.logger.log(`Cover image uploaded to ${coverImageResult}`);
@@ -53,8 +61,8 @@ export class FilmsService {
       this.logger.log('Film record created successfully');
       return film;
     } catch (error) {
-      this.logger.error('Error creating film', error.stack);
-      throw error;
+      this.logger.error(`Error creating film: ${error.message}`);
+      throw new Error(`Error creating film: ${error.message}`);
     }
   }
 
@@ -73,6 +81,7 @@ export class FilmsService {
     } else {
       films = await this.prisma.film.findMany();
     }
+
     return films.map((film) => ({
       id: film.id,
       title: film.title,
@@ -81,7 +90,7 @@ export class FilmsService {
       genre: film.genre,
       price: film.price,
       duration: film.duration,
-      cover_image_url: film.coverImageUrl,
+      cover_image_url: film.coverImageUrl || this.defaultCoverImageUrl,
       created_at: film.createdAt.toISOString(),
       updated_at: film.updatedAt.toISOString(),
     }));
@@ -91,6 +100,7 @@ export class FilmsService {
     this.logger.log(`Fetching film with id ${id} from database`);
     const film = await this.prisma.film.findUnique({ where: { id } });
     if (!film) return null;
+
     return {
       id: film.id,
       title: film.title,
@@ -101,7 +111,7 @@ export class FilmsService {
       price: film.price,
       duration: film.duration,
       video_url: film.videoUrl,
-      cover_image_url: film.coverImageUrl,
+      cover_image_url: film.coverImageUrl || this.defaultCoverImageUrl,
       created_at: film.createdAt.toISOString(),
       updated_at: film.updatedAt.toISOString(),
     };

@@ -43,7 +43,7 @@ export class ApiAuthController {
     try {
       const token = await this.authService.login(loginDto);
       this.logger.log('Login successful, returning token');
-      res.status(200).json({
+      return res.status(200).json({
         status: 'success',
         message: 'Login successful',
         data: {
@@ -53,7 +53,7 @@ export class ApiAuthController {
       });
     } catch (error) {
       this.logger.error('Login failed', error.stack);
-      res.status(400).json({
+      return res.status(400).json({
         status: 'error',
         message: 'Login failed',
         data: null,
