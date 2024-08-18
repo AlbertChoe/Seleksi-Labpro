@@ -1,14 +1,22 @@
-# Stage 1
-FROM node:14-alpine AS build
+FROM node:18
+
+# Set the working directory inside the container
 WORKDIR /app
+
+# Copy the package.json and package-lock.json to install dependencies
 COPY package*.json ./
-RUN npm install
+
+# Install dependencies
+RUN npm install --production
+
+# Copy the rest of the application code
 COPY . .
+
+# Build the application
 RUN npm run build
 
-# Stage 2
-FROM node:14-alpine
-WORKDIR /app
-COPY --from=build /app ./
+# Expose the port the app runs on
 EXPOSE 3000
-CMD ["node", "dist/main"]
+
+# Set the default command to run migrations and then start the application
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]

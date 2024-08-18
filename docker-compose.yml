@@ -1,26 +1,45 @@
 version: '3.8'
+
 services:
   app:
-    build: .
+    build:
+      dockerfile: Dockerfile
+      context: ./
     ports:
       - '3000:3000'
-    env_file:
-      - .env
-    depends_on:
-      - db
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: npm run start:dev
-  db:
-    image: postgres:13
     environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    ports:
-      - '5432:5432'
+      DATABASE_URL: postgresql://postgres:postgres@postgresql:5432/labpro?schema=public
+      JWT_SECRET: 72d02b278d0eecaa01a202e9e58804d657823b838b9ed0afe0741912871c2c19ed34ce843aaa335929f9bcb0bb62b3227868e4ea302c429cf9a34bf26a0ed7b6
+      CLOUDFLARE_R2_ENDPOINT: https://7076bb96d38b123ec74a7843bc674a94.r2.cloudflarestorage.com
+      CLOUDFLARE_R2_ACCESS_KEY_ID: 19a540922418d853bc6d5c2ea718af42
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: 6daba495571abb4bffeb51ca649b9793df2ac71290964692a599c859f84ad921
+      CLOUDFLARE_R2_BUCKET_NAME: seleksi-labpro
+      CLOUDFLARE_R2_PUBLIC_BASE_URL: https://pub-5b37e409c44047f8be99633ef99badb5.r2.dev
+    networks:
+      labpro-network:
+        aliases:
+          - app.labpro.local
+    depends_on:
+      - postgresql
+    restart: always
+
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    hostname: postgresql
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: labpro
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-volumes:
-  postgres-data:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      labpro-network:
+        aliases:
+          - postgresql.labpro.local
+
+networks:
+  labpro-network:
