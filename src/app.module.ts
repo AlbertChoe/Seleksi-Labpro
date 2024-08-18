@@ -10,6 +10,8 @@ import { FilmsModule } from './films/films.module';
 import { UserModule } from './user/user.module';
 import { UserMiddleware } from './middleware/user.middleware';
 import { CloudflareR2Module } from './cloudflare-r2/cloudfare-r2.module';
+import { APP_FILTER } from '@nestjs/core';
+import { NotFoundExceptionFilter } from './not-found-exception.filter';
 
 @Module({
   imports: [
@@ -24,7 +26,13 @@ import { CloudflareR2Module } from './cloudflare-r2/cloudfare-r2.module';
     CloudflareR2Module,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: NotFoundExceptionFilter,
+    },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

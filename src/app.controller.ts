@@ -36,4 +36,10 @@ export class AppController {
       nextPage: 2,
     };
   }
+
+  @Get('404')
+  @Render('404')
+  notFound() {
+    return {};
+  }
 }
