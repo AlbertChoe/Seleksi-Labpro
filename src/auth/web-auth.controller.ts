@@ -31,10 +31,12 @@ export class WebAuthController {
     try {
       this.logger.log('Registering new user');
       await this.authService.register(createUserDto);
-      res.redirect('/auth/login');
+      res.redirect('/login');
     } catch (error) {
       this.logger.error('Registration failed', error.stack);
-      res.status(400).send('Registration failed');
+      res.status(400).render('register', {
+        errorMessage: 'Registration failed. Please try again.',
+      });
     }
   }
 
@@ -70,7 +72,9 @@ export class WebAuthController {
       res.redirect('/');
     } catch (error) {
       this.logger.error('Login failed', error.stack);
-      res.status(400).send('Login failed');
+      res
+        .status(400)
+        .render('login', { errorMessage: 'Invalid username or password' });
     }
   }
 

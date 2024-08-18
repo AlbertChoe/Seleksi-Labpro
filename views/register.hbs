@@ -12,6 +12,13 @@
     <div class='min-h-screen flex items-center justify-center bg-gray-100'>
       <div class='bg-white p-8 rounded-lg shadow-lg w-full max-w-md'>
         <h1 class='text-2xl font-bold mb-4'>Register</h1>
+
+        {{#if errorMessage}}
+          <div class='bg-red-100 text-red-700 p-4 mb-4 rounded-md'>
+            {{errorMessage}}
+          </div>
+        {{/if}}
+
         <form action='/register' method='POST' class='space-y-4'>
           <div>
             <label
@@ -80,6 +87,13 @@
             >Register</button>
           </div>
         </form>
+
+        <div class='mt-4 text-center'>
+          <p class='text-sm text-gray-600'>
+            Already have an account?
+            <a href='/login' class='text-blue-500 hover:underline'>Login</a>
+          </p>
+        </div>
       </div>
     </div>
   </body>
