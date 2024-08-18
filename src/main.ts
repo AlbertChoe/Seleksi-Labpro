@@ -2,13 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { WinstonModule } from 'nest-winston';
 import { winstonLogger } from './logger/winston-logger';
-import * as exphbs from 'express-handlebars'; // Adjusted import
+import * as exphbs from 'express-handlebars';
 import * as handlebarsLayouts from 'handlebars-layouts';
 import * as Handlebars from 'handlebars';
 import * as cookieParser from 'cookie-parser';
+import { PrismaService } from './prisma/prisma.service';
+import { seedDatabase } from './seed';
+
 const port = process.env.PORT || 3000;
 console.log(
   `Launching NestJS app on port ${port}, URL: http://127.0.0.1:${port}`,
@@ -41,11 +43,15 @@ async function bootstrap() {
   app.setViewEngine('hbs');
 
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://labpro-fe.hmif.dev'], // Add your frontend domains
+    origin: ['http://localhost:3000', 'https://labpro-fe.hmif.dev'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
+  const prismaService = app.get(PrismaService);
+  await seedDatabase(prismaService);
+
   await app.listen(port);
 }
+
 bootstrap();
