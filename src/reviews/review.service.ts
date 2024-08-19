@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { format } from 'date-fns';
 
 @Injectable()
 export class ReviewsService {
@@ -59,7 +60,7 @@ export class ReviewsService {
       rating: review.rating,
       comment: review.comment,
       username: review.user.username,
-      createdAt: review.createdAt.toISOString(),
+      createdAt: format(new Date(review.createdAt), 'PPpp'),
     }));
   }
 

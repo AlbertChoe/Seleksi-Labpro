@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-
+import { format } from 'date-fns';
 @Injectable()
 export class WishlistService {
   private readonly logger = new Logger(WishlistService.name);
@@ -45,7 +45,7 @@ export class WishlistService {
       filmId: item.film.id,
       title: item.film.title,
       cover_image_url: item.film.coverImageUrl || this.defaultCoverImageUrl,
-      addedAt: item.createdAt.toISOString(),
+      addedAt: format(new Date(item.createdAt), 'PPpp'),
     }));
   }
 

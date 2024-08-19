@@ -1,8 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { format } from 'date-fns';
 
 @Injectable()
 export class UserService {
+  private readonly defaultCoverImageUrl =
+    'https://pub-5b37e409c44047f8be99633ef99badb5.r2.dev/png-transparent-clap-board-illustration-cinema-film-clapperboard-computer-icons-cine-miscellaneous-television-angle-thumbnail.png';
+
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query?: string) {
@@ -73,9 +77,19 @@ export class UserService {
   }
 
   async getUserPurchases(userId: string) {
-    return this.prisma.purchase.findMany({
+    const purchases = await this.prisma.purchase.findMany({
       where: { userId },
       include: { film: true },
     });
+
+    return purchases.map((purchase) => ({
+      id: purchase.id,
+      filmId: purchase.film.id,
+      title: purchase.film.title,
+      cover_image_url: purchase.film.coverImageUrl || this.defaultCoverImageUrl,
+      description: purchase.film.description,
+      director: purchase.film.director,
+      purchasedAt: format(new Date(purchase.createdAt), 'PPpp'),
+    }));
   }
 }
