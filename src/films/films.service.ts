@@ -4,6 +4,7 @@ import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
 import { CloudflareR2Service } from '../cloudflare-r2/cloudflare-r2.service';
 import { v4 as uuidv4 } from 'uuid';
+import { Prisma } from '@prisma/client';
 @Injectable()
 export class FilmsService {
   private readonly logger = new Logger(FilmsService.name);
@@ -94,6 +95,58 @@ export class FilmsService {
       created_at: film.createdAt.toISOString(),
       updated_at: film.updatedAt.toISOString(),
     }));
+  }
+
+  async findAllWithPagination(q?: string, page = 1, limit = 9) {
+    this.logger.log(
+      `Fetching all films from database, page: ${page}, limit: ${limit}`,
+    );
+
+    const skip = (page - 1) * limit;
+
+    let films;
+    const where: Prisma.FilmWhereInput = q
+      ? {
+          OR: [
+            { title: { contains: q, mode: 'insensitive' } },
+            { director: { contains: q, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+
+    films = await this.prisma.film.findMany({
+      where,
+      skip,
+      take: limit,
+    });
+
+    const totalItems = await this.prisma.film.count({ where });
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const formattedFilms = films.map((film) => ({
+      id: film.id,
+      title: film.title,
+      director: film.director,
+      release_year: film.release_year,
+      genre: film.genre,
+      price: film.price,
+      duration: film.duration,
+      cover_image_url: film.coverImageUrl || this.defaultCoverImageUrl,
+      created_at: film.createdAt.toISOString(),
+      updated_at: film.updatedAt.toISOString(),
+    }));
+
+    return {
+      films: formattedFilms,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        hasPrev: page > 1,
+        hasNext: page < totalPages,
+        prevPage: page > 1 ? page - 1 : null,
+        nextPage: page < totalPages ? page + 1 : null,
+      },
+    };
   }
 
   async findOne(id: string) {

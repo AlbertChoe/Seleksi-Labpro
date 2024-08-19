@@ -17,23 +17,41 @@ export class AppController {
     status: 200,
     description: 'Browse page rendered successfully',
   })
-  async getBrowsePage(@Req() req: Request, @Query('q') q?: string) {
+  async getBrowsePage(
+    @Req() req: Request,
+    @Query('q') q?: string,
+    @Query('page') page = '1',
+  ) {
     this.logger.log(
-      `Rendering browse page with search query: ${q || 'no query'}`,
+      `Rendering browse page with search query: ${q || 'no query'}, page: ${page}`,
     );
 
-    const films = await this.filmsService.findAll(q);
+    const pageNumber = parseInt(page, 10);
+
+    const { films, pagination } = await this.filmsService.findAllWithPagination(
+      q,
+      pageNumber,
+    );
+
     const user = req.user || null;
+
+    const pages = Array.from(
+      { length: pagination.totalPages },
+      (_, i) => i + 1,
+    );
 
     return {
       isLoggedIn: !!user,
       username: user?.username || '',
       balance: user?.balance || 0,
       films,
-      hasPrev: false,
-      hasNext: false,
-      prevPage: 0,
-      nextPage: 2,
+      hasPrev: pagination.hasPrev,
+      hasNext: pagination.hasNext,
+      prevPage: pagination.prevPage,
+      nextPage: pagination.nextPage,
+      query: q,
+      pages,
+      currentPage: pagination.currentPage,
     };
   }
 

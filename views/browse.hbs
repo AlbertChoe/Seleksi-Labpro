@@ -25,7 +25,7 @@
         <img
           src='{{this.cover_image_url}}'
           alt='Film cover'
-          class='w-full h-40 object-cover rounded-md'
+          class='w-full h-52 object-cover rounded-md'
         />
         <div class='mt-4'>
           <h3 class='text-lg font-bold'>{{this.title}}</h3>
@@ -53,6 +53,14 @@
         class='px-3 py-1 bg-white border rounded-md shadow-sm text-gray-700 hover:bg-gray-50'
       >Previous</a>
     {{/if}}
+
+    {{#each pages}}
+      <a
+        href='?page={{this}}&q={{../query}}'
+        class='mx-1 px-3 py-1 bg-white border rounded-md shadow-sm text-gray-700 hover:bg-gray-50 {{#ifEquals this ../currentPage}}bg-blue-600 text-white{{/ifEquals}}'
+      >{{this}}</a>
+    {{/each}}
+
     {{#if hasNext}}
       <a
         href='?page={{nextPage}}&q={{query}}'
