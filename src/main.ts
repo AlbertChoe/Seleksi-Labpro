@@ -31,6 +31,13 @@ async function bootstrap() {
   Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
     return arg1 == arg2 ? options.fn(this) : options.inverse(this);
   });
+  Handlebars.registerHelper('repeat', function (n, options) {
+    let accum = '';
+    for (let i = 0; i < n; ++i) {
+      accum += options.fn(this);
+    }
+    return accum;
+  });
 
   app.use(cookieParser());
 

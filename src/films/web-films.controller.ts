@@ -8,6 +8,7 @@ import {
   Req,
   Post,
   Res,
+  Query,
 } from '@nestjs/common';
 import { FilmsService } from './films.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -16,16 +17,26 @@ import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/role.enum';
 import { Request, Response } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { WishlistService } from '../wishlist/wishlist.service';
+import { ReviewsService } from 'src/reviews/review.service';
 
 @Controller('films')
 export class WebFilmsController {
   private readonly logger = new Logger(WebFilmsController.name);
 
-  constructor(private readonly filmsService: FilmsService) {}
+  constructor(
+    private readonly filmsService: FilmsService,
+    private readonly wishlistService: WishlistService,
+    private readonly reviewsService: ReviewsService,
+  ) {}
 
   @Get(':id')
   @Render('film-details')
-  async getFilmDetailsPage(@Param('id') id: string, @Req() req: Request) {
+  async getFilmDetailsPage(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Query('error') error?: string,
+  ) {
     this.logger.log(`Rendering film details page for id ${id}`);
 
     const film = await this.filmsService.findOne(id);
@@ -38,18 +49,26 @@ export class WebFilmsController {
     }
 
     const user = req.user || null;
-    this.logger.log(`User object in controller: ${JSON.stringify(req.user)}`);
 
     const isPurchased = user
       ? await this.filmsService.isFilmPurchasedByUser(user.id, id)
       : false;
 
+    const isInWishlist = user
+      ? await this.wishlistService.isInWishlist(user.id, id)
+      : false;
+
+    const reviews = await this.reviewsService.getReviewsForFilm(id);
+
     return {
       film,
       isPurchased,
+      isInWishlist,
       isLoggedIn: !!user,
       username: user?.username || '',
       balance: user?.balance || 0,
+      reviews,
+      error,
     };
   }
 

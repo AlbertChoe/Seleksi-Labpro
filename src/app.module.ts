@@ -12,6 +12,8 @@ import { UserMiddleware } from './middleware/user.middleware';
 import { CloudflareR2Module } from './cloudflare-r2/cloudfare-r2.module';
 import { APP_FILTER } from '@nestjs/core';
 import { NotFoundExceptionFilter } from './not-found-exception.filter';
+import { ReviewsModule } from './reviews/review.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { NotFoundExceptionFilter } from './not-found-exception.filter';
     UserModule,
     FilmsModule,
     CloudflareR2Module,
+    ReviewsModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [

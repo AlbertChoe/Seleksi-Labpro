@@ -1,0 +1,43 @@
+<div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+  <h1 class='text-4xl font-bold leading-tight text-gray-900 mb-8'>My Wishlist</h1>
+
+  {{#if wishlist.length}}
+    <div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'>
+      {{#each wishlist}}
+        <div
+          class='bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105'
+        >
+          <img
+            src='{{this.cover_image_url}}'
+            alt='{{this.title}}'
+            class='w-full h-56 object-cover'
+          />
+          <div class='p-6'>
+            <h3 class='text-xl font-semibold text-gray-800'>{{this.title}}</h3>
+            <p class='mt-2 text-sm text-gray-500'>Added on {{this.addedAt}}</p>
+            <div class='mt-2 flex justify-between items-center'>
+              <a
+                href='/films/{{this.filmId}}'
+                class='text-blue-600 hover:underline font-medium'
+              >
+                Details
+              </a>
+              <form action='/wishlist/{{this.filmId}}' method='POST'>
+                <button
+                  type='submit'
+                  class='text-red-500 hover:text-red-700 font-medium pt-4'
+                >
+                  Remove
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p class='text-gray-700 text-lg text-center mt-8'>
+      You have no films in your wishlist yet.
+    </p>
+  {{/if}}
+</div>
