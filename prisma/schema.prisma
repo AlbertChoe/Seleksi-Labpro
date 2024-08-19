@@ -8,7 +8,6 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-
 model User {
   id          String    @id @default(cuid())
   email       String    @unique
@@ -19,6 +18,8 @@ model User {
   role        String    @default("user") 
   balance     Int       @default(0)
   purchases   Purchase[]
+  reviews     Review[]
+  wishlist    Wishlist[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -28,7 +29,7 @@ model Film {
   title         String
   description   String
   director      String
-  release_year   Int
+  release_year  Int
   genre         String[]
   price         Int
   duration      Int
@@ -38,9 +39,37 @@ model Film {
   updatedAt     DateTime  @updatedAt
 
   purchases     Purchase[]
+  reviews       Review[]
+  wishlist      Wishlist[]
 }
 
 model Purchase {
+  id        String   @id @default(cuid())
+  userId    String
+  filmId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  film      Film     @relation(fields: [filmId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, filmId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String
+  userId    String
+  filmId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  film      Film     @relation(fields: [filmId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, filmId])
+}
+
+model Wishlist {
   id        String   @id @default(cuid())
   userId    String
   filmId    String
