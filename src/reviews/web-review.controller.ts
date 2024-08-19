@@ -21,7 +21,7 @@ export class ReviewsController {
   @Post(':filmId')
   async addReview(
     @Param('filmId') filmId: string,
-    @Body('rating') rating: number,
+    @Body('rating') rating: string,
     @Body('comment') comment: string,
     @Res() res: Response,
     @Req() req: Request,
@@ -32,7 +32,9 @@ export class ReviewsController {
     }
 
     try {
-      await this.reviewService.addReview(userId, filmId, rating, comment);
+      const parsedRating = parseInt(rating, 10);
+
+      await this.reviewService.addReview(userId, filmId, parsedRating, comment);
       return res.redirect(`/films/${filmId}`);
     } catch (error) {
       this.logger.error(

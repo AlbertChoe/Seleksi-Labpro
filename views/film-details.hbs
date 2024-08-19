@@ -1,11 +1,21 @@
 <div class='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
   <div class='bg-white shadow-lg rounded-lg overflow-hidden'>
+    <!-- Back Button -->
+    <div class='p-6'>
+      <button
+        onclick='history.back()'
+        class='bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 mb-4'
+      >
+        ← Back
+      </button>
+    </div>
+
     <!-- Film Cover and Title -->
     <div class='relative'>
       <img
         src='{{film.cover_image_url}}'
         alt='{{film.title}}'
-        class='w-full h-80 object-cover'
+        class='w-full h-96 object-cover'
       />
       <div
         class='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6 text-center'

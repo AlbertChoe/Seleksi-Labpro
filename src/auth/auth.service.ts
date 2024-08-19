@@ -15,10 +15,22 @@ export class AuthService {
   ) {}
 
   async register(createUserDto: CreateUserDto) {
+    const emailLowercased = createUserDto.email.toLowerCase();
+
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email: emailLowercased }, { username: createUserDto.username }],
+      },
+    });
+
+    if (existingUser) {
+      throw new Error('Email or username already exists');
+    }
+
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     return this.prisma.user.create({
       data: {
-        email: createUserDto.email,
+        email: emailLowercased,
         username: createUserDto.username,
         firstName: createUserDto.firstName,
         lastName: createUserDto.lastName,
@@ -29,9 +41,16 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<string> {
     this.logger.log(`Attempting to login user: ${loginDto.username}`);
-    const user = await this.prisma.user.findUnique({
-      where: { username: loginDto.username },
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: loginDto.username.toLowerCase() },
+          { username: loginDto.username },
+        ],
+      },
     });
+
     if (!user) {
       this.logger.error(`User not found: ${loginDto.username}`);
       throw new Error('Invalid credentials');
@@ -61,8 +80,16 @@ export class AuthService {
     }
   }
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.prisma.user.findUnique({ where: { username } });
+  async validateUser(usernameOrEmail: string, pass: string): Promise<any> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { username: usernameOrEmail },
+          { email: usernameOrEmail.toLowerCase() },
+        ],
+      },
+    });
+
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user;
       return result;

@@ -8,6 +8,7 @@ import {
   BadRequestException,
   Res,
   Render,
+  Redirect,
 } from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
 import { Request, Response } from 'express';
@@ -26,7 +27,8 @@ export class WishlistController {
   ) {
     const userId = req.user?.id;
     if (!userId) {
-      throw new BadRequestException('You must be logged in to add to wishlist');
+      this.logger.warn('User not logged in, redirecting to login page');
+      return res.redirect('/login');
     }
 
     try {
@@ -41,13 +43,12 @@ export class WishlistController {
   }
 
   @Get()
+  @Redirect('/login', 302)
   @Render('wishlist')
   async getUserWishlist(@Req() req: Request) {
     const userId = req.user?.id;
     if (!userId) {
-      throw new BadRequestException(
-        'You must be logged in to view your wishlist',
-      );
+      return { url: '/login' };
     }
 
     const wishlist = await this.wishlistService.getUserWishlist(userId);

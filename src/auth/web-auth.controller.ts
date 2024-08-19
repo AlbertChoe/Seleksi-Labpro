@@ -35,7 +35,7 @@ export class WebAuthController {
     } catch (error) {
       this.logger.error('Registration failed', error.stack);
       res.status(400).render('register', {
-        errorMessage: 'Registration failed. Please try again.',
+        errorMessage: error.message || 'Registration failed. Please try again.',
       });
     }
   }
@@ -72,9 +72,9 @@ export class WebAuthController {
       res.redirect('/');
     } catch (error) {
       this.logger.error('Login failed', error.stack);
-      res
-        .status(400)
-        .render('login', { errorMessage: 'Invalid username or password' });
+      res.status(400).render('login', {
+        errorMessage: 'Invalid username/email or password',
+      });
     }
   }
 

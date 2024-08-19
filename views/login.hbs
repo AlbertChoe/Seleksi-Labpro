@@ -22,14 +22,16 @@
         <form action='/login' method='POST' class='space-y-4'>
           <div>
             <label
-              for='username'
+              for='usernameOrEmail'
               class='block text-sm font-medium text-gray-700'
-            >Username</label>
+            >Email or Username</label>
             <input
               type='text'
               name='username'
-              id='username'
+              id='usernameOrEmail'
+              placeholder='Enter your email or username'
               class='mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+              required
             />
           </div>
           <div>
@@ -41,7 +43,9 @@
               type='password'
               name='password'
               id='password'
+              placeholder='Enter your password'
               class='mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+              required
             />
           </div>
           <div>
