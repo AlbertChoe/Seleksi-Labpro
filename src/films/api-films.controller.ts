@@ -214,11 +214,28 @@ export class ApiFilmsController {
   async remove(@Param('id') id: string, @Res() res: Response) {
     try {
       this.logger.log(`Deleting film with id ${id}`);
-      await this.filmsService.remove(id);
+      const film = await this.filmsService.remove(id);
+      if (!film) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          status: 'error',
+          message: 'Film not found',
+          data: null,
+        });
+      }
       return res.status(HttpStatus.OK).json({
         status: 'success',
         message: 'Film deleted successfully',
-        data: null,
+        data: {
+          id: film.id,
+          title: film.title,
+          description: film.description,
+          director: film.director,
+          release_year: film.release_year,
+          genre: film.genre,
+          video_url: film.videoUrl,
+          created_at: film.createdAt.toISOString(),
+          updated_at: film.updatedAt.toISOString(),
+        },
       });
     } catch (error) {
       this.logger.error('Error deleting film', error.stack);
