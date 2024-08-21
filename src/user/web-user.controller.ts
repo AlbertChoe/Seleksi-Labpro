@@ -14,7 +14,6 @@ export class WebUserController {
 
   @Get('my-list')
   @Render('my-list')
-  @Roles(Role.User)
   async getMyListPage(@Req() req: Request) {
     const user = req.user || null;
     const purchases = user
