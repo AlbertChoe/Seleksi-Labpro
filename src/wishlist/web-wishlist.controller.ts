@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
   Req,
   Param,
   Logger,
@@ -38,6 +39,31 @@ export class WishlistController {
       this.logger.error(`Failed to add film to wishlist: ${error.message}`);
       return res.redirect(
         `/films/${filmId}?error=${encodeURIComponent(error.message)}`,
+      );
+    }
+  }
+
+  @Post(':filmId/remove')
+  async removeFromWishlist(
+    @Param('filmId') filmId: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const userId = req.user?.id;
+    if (!userId) {
+      this.logger.warn('User not logged in, redirecting to login page');
+      return res.redirect('/login');
+    }
+
+    try {
+      await this.wishlistService.removeFromWishlist(userId, filmId);
+      return res.redirect('/wishlist');
+    } catch (error) {
+      this.logger.error(
+        `Failed to remove film from wishlist: ${error.message}`,
+      );
+      return res.redirect(
+        `/wishlist?error=${encodeURIComponent(error.message)}`,
       );
     }
   }

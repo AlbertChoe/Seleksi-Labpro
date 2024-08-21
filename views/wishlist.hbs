@@ -22,10 +22,11 @@
               >
                 Details
               </a>
-              <form action='/wishlist/{{this.filmId}}' method='POST'>
+              <form action='/wishlist/{{this.filmId}}/remove' method='POST'>
                 <button
                   type='submit'
                   class='text-red-500 hover:text-red-700 font-medium pt-4'
+                  onclick="return confirm('Are you sure you want to remove this film from your wishlist?')"
                 >
                   Remove
                 </button>
