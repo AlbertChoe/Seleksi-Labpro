@@ -1,96 +1,183 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+<h1 align="center">OWCA FILM - Online Film Catalog</h1>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+|   NIM    |  Nama  |
+| :------: | :----: |
+| 13522081 | Albert |
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![GitHub last commit](https://img.shields.io/github/last-commit/AlbertChoe/Seleksi-Labpro)
 
-## Description
+# Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [How to run](#how-to-run)
+- [Design Patterns Used](#design-patterns-used)
+- [Built With](#built-with)
+- [Version Information](#version-information)
+- [Endpoint](#endpoint)
+- [Bonus Features](#bonus-features)
 
-## Installation
+# How to run
 
-```bash
-$ npm install
+### Without docker
+
+Follow these steps:
+
+1. Clone this repository :
+
+```shell
+git clone https://github.com/AlbertChoe/Seleksi-Labpro.git
+cd Seleksi-Labpro
 ```
 
-## Running the app
+2. Install the dependencies:
 
-```bash
-# development
-$ npm run start
+   Ensure you have Node.js installed. Then, install the necessary dependencies using:
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```shell
+npm install
 ```
 
-## Swagger
+3. Set up environment variables:
 
-Run this commnad to start swagger
-The host will be http://127.0.0.1:4000/api/panel
+   Create a `.env` file in the root directory and set up your environment variables
 
-```bash
-$ npm run start:swagger
+   You can see the .env example from `.env.example` in the root folder
 
+4. Run the development server:
+
+```shell
+npm run start:dev
 ```
 
-- IF the api is not refresh when developing then do this
+5. Access the application: The application will be running on http://localhost:3000.
 
-```bash
-$ npm run build
-$ npm run start:swagger
+### With docker
+
+Follow these steps:
+
+1. Clone this repository :
+
+```shell
+git clone https://github.com/AlbertChoe/Seleksi-Labpro.git
+cd Seleksi-Labpro
 ```
 
-## Test
+2. Ensure Docker is installed on your machine.
 
-```bash
-# unit tests
-$ npm run test
+3. Build the Docker image:
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
-
+```shell
 docker-compose up --build
+```
 
-docker-compose logs -f
+4. Access the application: The application will be running on http://localhost:3000.
 
-docker compose down
+5. Stopping the Application
+
+```shell
+docker-compose down
+```
+
+# Design Patterns Used
+
+1. Singleton Pattern
+
+   Reason: Singleton pattern is used in the PrismaService to ensure only one instance of Prisma Client is utilized throughout the application. This helps manage database connections efficiently and avoids issues related to multiple instances.
+
+2. Mediator Pattern
+
+   Reason: Mediator pattern is applied in middleware such as JwtAuthGuard and RolesGuard to manage and coordinate interactions between objects, particularly in managing access control. This allows centralized and consistent access management.
+
+3. Repository Pattern
+
+   Reason: The Repository pattern is implemented in services like UserService, FilmsService, and other services to separate data access logic from business logic. This makes the code more modular and maintainable.
+
+# Built With
+
+- Backend Framework: NestJS
+- Language: TypeScript
+- Database ORM: Prisma
+- Database: PostgreSQL
+- Authentication: JWT (Json Web Token)
+- Storage: Cloudflare R2
+- Frontend Framework: Express Handlebars (HBS)
+- CSS Framework: TailwindCSS
+
+# Version Information
+
+- Node.js: v21.7.3
+- NestJS: 10.3.10
+- Prisma: 5.17.0
+- TailwindCSS: 3.4.7
+- AWS S3 SDK: 3.623.0
+
+# Endpoint
+
+Website
+
+- Authentication
+
+  - `GET /login`
+  - `POST /login`
+  - `GET /register`
+  - `POST /register`
+  - `POST /logout`
+
+- Films
+
+  - `GET /films`
+  - `POST /films/:id`
+  - `POST /films/:id/purchase`
+  - `GET /films/:id/watch`
+
+- Wishlist
+
+  - `GET /wishlist`
+  - `POST /wishlist/:filmId`
+  - `POST /wishlist/:filmId/remove`
+
+- Review
+
+  - `GET /review/:filmId`
+  - `POST /review/:filmId`
+
+- User
+  - `GET /my-list`
+
+API
+
+- Authentication
+
+  - `GET /login`
+  - `POST /login`
+  - `GET /register`
+  - `POST /register`
+  - `POST /logout`
+
+- Films
+
+  - `GET /films`
+  - `POST /films/:id`
+  - `POST /films/:id/purchase`
+  - `GET /films/:id/watch`
+
+- Wishlist
+
+  - `GET /wishlist`
+  - `POST /wishlist/:filmId`
+  - `POST /wishlist/:filmId/remove`
+
+- Review
+
+  - `GET /review/:filmId`
+  - `POST /review/:filmId`
+
+- User
+  - `GET /my-list`
+
+# Bonus Features
+
+- Wishlist: Users can add films to their wishlist and manage it.
+- Review: Users can submit reviews for any films .
+- Swagger Integration: API documentation is generated and accessible via Swagger.
+- Responsive Design: The application is fully responsive across devices.
+- Cloudflare R2 Integration: The application uses Cloudflare R2 for file storage.

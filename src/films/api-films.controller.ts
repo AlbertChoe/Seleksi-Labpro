@@ -36,7 +36,7 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 
-@ApiTags('/api/films')
+@ApiTags('api-films')
 @ApiBearerAuth()
 @Controller('api/films')
 export class ApiFilmsController {
