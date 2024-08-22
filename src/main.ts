@@ -57,6 +57,7 @@ async function bootstrap() {
       'http://localhost:3000',
       'https://labpro-fe.hmif.dev',
       'https://seleksi-labpro.vercel.app',
+      'https://seleksi-labpro-i0yu8utsp-albertchoes-projects.vercel.app/',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
