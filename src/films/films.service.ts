@@ -108,7 +108,7 @@ export class FilmsService {
     const skip = (page - 1) * limit;
 
     let films;
-    const where: Prisma.FilmWhereInput = q
+    const where: Prisma.FilmWhereUniqueInput | Prisma.FilmWhereInput = q
       ? {
           OR: [
             { title: { contains: q, mode: 'insensitive' } },
