@@ -8,6 +8,7 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install --production
+RUN npm install -g @nestjs/cli
 
 # Copy the rest of the application code
 COPY . .
@@ -16,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 8080
 
 # Set the default command to run migrations and then start the application
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
