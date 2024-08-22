@@ -12,7 +12,7 @@ RUN npm install -g @nestjs/cli
 
 # Copy the rest of the application code
 COPY . .
-
+RUN npx prisma generate
 # Build the application
 RUN npm run build
 
