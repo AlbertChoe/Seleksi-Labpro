@@ -97,7 +97,7 @@ docker-compose down
 - Backend Framework: NestJS
 - Language: TypeScript
 - Database ORM: Prisma
-- Database: PostgreSQL
+- Database: PostgreSQL Neon DB
 - Authentication: JWT (Json Web Token)
 - Storage: Cloudflare R2
 - Frontend Framework: Express Handlebars (HBS)
