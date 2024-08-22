@@ -53,7 +53,7 @@ async function bootstrap() {
   app.setViewEngine('hbs');
 
   app.enableCors({
-    origin: '*', // Allow all origins
+    origin: ['http://localhost:3000', 'https://labpro-fe.hmif.dev'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
