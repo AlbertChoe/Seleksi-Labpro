@@ -14,6 +14,7 @@
 - [Version Information](#version-information)
 - [Endpoint](#endpoint)
 - [Bonus Features](#bonus-features)
+- [Link](#link)
 
 # How to run
 
@@ -169,6 +170,16 @@ API
 - Wishlist: Users can add films to their wishlist and manage it.
 - Review: Users can submit reviews for any films .
 - Swagger Integration: API documentation is generated and accessible via Swagger.
+
+  _for accessing the swagger documentation run command `npm run start:swagger`_
+  _The swagger documentation link will be http://127.0.0.1:4000/api/panel_
+
 - Responsive Design: The application is fully responsive across devices.
 - Cloudflare R2 Integration: The application uses Cloudflare R2 for file storage.
-- Deployment : The application deployed using vercell
+- Deployment : The application deployed using google run
+
+# Link
+
+Website Link : https://my-app-rzuv4l2wya-et.a.run.app/
+
+API endpoint : [my-app-rzuv4l2wya-et.a.run.app/api](https://my-app-rzuv4l2wya-et.a.run.app/api)

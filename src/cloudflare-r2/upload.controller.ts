@@ -30,7 +30,10 @@ export class UploadController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload a file to Cloudflare R2 storage' })
+  @ApiOperation({
+    summary:
+      'Upload a file to Cloudflare R2 storage NOTE: this controller is not used because this project directly the service, not through controller',
+  })
   @ApiBody({
     description: 'File to upload',
     type: 'multipart/form-data',
@@ -69,7 +72,8 @@ export class UploadController {
 
   @Get(':key')
   @ApiOperation({
-    summary: 'Retrieve a file from Cloudflare R2 storage by its key',
+    summary:
+      'Retrieve a file from Cloudflare R2 storage by its key  NOTE: this controller is not used because this project directly the service, not through controller',
   })
   @ApiResponse({
     status: 200,

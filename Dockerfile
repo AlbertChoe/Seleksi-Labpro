@@ -17,6 +17,7 @@ RUN npm run build
 
 # Expose the port the app runs on
 EXPOSE 3000
+# deployed in google cloud using port 8080
 
 # Set the default command to run migrations and then start the application
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
