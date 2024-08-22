@@ -53,7 +53,11 @@ async function bootstrap() {
   app.setViewEngine('hbs');
 
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://labpro-fe.hmif.dev'],
+    origin: [
+      'http://localhost:3000',
+      'https://labpro-fe.hmif.dev',
+      'https://seleksi-labpro.vercel.app',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

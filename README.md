@@ -147,32 +147,22 @@ API
 
 - Authentication
 
-  - `GET /login`
-  - `POST /login`
-  - `GET /register`
-  - `POST /register`
-  - `POST /logout`
+  - `POST api/login`
+  - `GET api/self`
 
 - Films
 
-  - `GET /films`
-  - `POST /films/:id`
-  - `POST /films/:id/purchase`
-  - `GET /films/:id/watch`
-
-- Wishlist
-
-  - `GET /wishlist`
-  - `POST /wishlist/:filmId`
-  - `POST /wishlist/:filmId/remove`
-
-- Review
-
-  - `GET /review/:filmId`
-  - `POST /review/:filmId`
+  - `POST api/films`
+  - `GET api/films`
+  - `GET api/films/:id`
+  - `PUT api/films/:id`
+  - `DELETE api/films/:id`
 
 - User
-  - `GET /my-list`
+  - `GET api/users`
+  - `GET api/users/:id`
+  - `DELETE api/users/:id`
+  - `POST api/users/:id/balance`
 
 # Bonus Features
 
@@ -181,3 +171,4 @@ API
 - Swagger Integration: API documentation is generated and accessible via Swagger.
 - Responsive Design: The application is fully responsive across devices.
 - Cloudflare R2 Integration: The application uses Cloudflare R2 for file storage.
+- Deployment : The application deployed using vercell
