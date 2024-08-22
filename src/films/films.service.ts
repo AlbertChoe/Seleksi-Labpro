@@ -53,6 +53,9 @@ export class FilmsService {
             createFilmDto.release_year as unknown as string,
             10,
           ),
+          genre: Array.isArray(createFilmDto.genre)
+            ? createFilmDto.genre
+            : [createFilmDto.genre],
           price: parseInt(createFilmDto.price as unknown as string, 10),
           duration: parseInt(createFilmDto.duration as unknown as string, 10),
           videoUrl: videoResult,
